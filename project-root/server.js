@@ -1624,7 +1624,7 @@ app.get("/api/user-data/:userId", (req, res) => {
       const userData = results[0];
 
       // Get academic data
-      const academicQuery = `SELECT da.*, j.nama_jurusan, p.nama_prodi 
+      const academicQuery = `SELECT da.*, j.nama_jurusan, p.nama_prodi
                             FROM data_akademik da
                             LEFT JOIN jurusan j ON da.id_jurusan = j.id_jurusan
                             LEFT JOIN prodi p ON da.id_prodi = p.id_prodi
@@ -1716,6 +1716,122 @@ app.get("/api/user-data/:userId", (req, res) => {
         });
       });
     }
+  });
+});
+
+// API Get Complete Profile Data - For Sidebar Display
+app.get("/api/profile-data/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  console.log("=== GET COMPLETE PROFILE DATA ===");
+  console.log("User ID:", userId);
+
+  if (!userId) {
+    return res.json({ success: false, message: "User ID tidak ditemukan" });
+  }
+
+  // Get user basic info
+  const userQuery = "SELECT id_pengguna, email, nama_lengkap, role FROM user WHERE id_pengguna = ?";
+
+  db.query(userQuery, [userId], (err, userResults) => {
+    if (err) {
+      console.error("Database error getting user:", err);
+      return res.json({
+        success: false,
+        message: "Gagal mendapatkan data user",
+      });
+    }
+
+    if (userResults.length === 0) {
+      return res.json({ success: false, message: "User tidak ditemukan" });
+    }
+
+    const profileData = {
+      user: userResults[0],
+      pribadi: null,
+      akademik: null,
+      orangtua: null,
+      dokumen: [],
+      progress: {
+        dataPribadi: false,
+        dataAkademik: false,
+        dataOrangTua: false,
+        uploadDokumen: false,
+        totalProgress: 0,
+      },
+    };
+
+    // Get mahasiswa data
+    const mahasiswaQuery = "SELECT * FROM mahasiswa WHERE id_pengguna = ?";
+
+    db.query(mahasiswaQuery, [userId], (err, mahasiswaResults) => {
+      if (err) {
+        console.error("Database error getting mahasiswa:", err);
+      } else if (mahasiswaResults.length > 0) {
+        profileData.pribadi = mahasiswaResults[0];
+        profileData.progress.dataPribadi = true;
+
+        const idMahasiswa = mahasiswaResults[0].id_mahasiswa;
+
+        // Get akademik data
+        const akademikQuery = `
+          SELECT da.*, j.nama_jurusan, p.nama_prodi
+          FROM data_akademik da
+          LEFT JOIN jurusan j ON da.id_jurusan = j.id_jurusan
+          LEFT JOIN prodi p ON da.id_prodi = p.id_prodi
+          WHERE da.id_mahasiswa = ?
+        `;
+
+        db.query(akademikQuery, [idMahasiswa], (err, akademikResults) => {
+          if (!err && akademikResults.length > 0) {
+            profileData.akademik = akademikResults[0];
+            profileData.progress.dataAkademik = true;
+          }
+
+          // Get orang tua data
+          const orangtuaQuery = "SELECT * FROM data_orangtua WHERE id_mahasiswa = ?";
+
+          db.query(orangtuaQuery, [idMahasiswa], (err, orangtuaResults) => {
+            if (!err && orangtuaResults.length > 0) {
+              profileData.orangtua = orangtuaResults[0];
+              profileData.progress.dataOrangTua = true;
+            }
+
+            // Get dokumen data
+            const dokumenQuery = "SELECT * FROM dokumen WHERE id_mahasiswa = ?";
+
+            db.query(dokumenQuery, [idMahasiswa], (err, dokumenResults) => {
+              if (!err && dokumenResults.length > 0) {
+                profileData.dokumen = dokumenResults;
+                if (dokumenResults.length >= 4) {
+                  profileData.progress.uploadDokumen = true;
+                }
+              }
+
+              // Calculate total progress
+              let completedSteps = 0;
+              if (profileData.progress.dataPribadi) completedSteps++;
+              if (profileData.progress.dataAkademik) completedSteps++;
+              if (profileData.progress.dataOrangTua) completedSteps++;
+              if (profileData.progress.uploadDokumen) completedSteps++;
+
+              profileData.progress.totalProgress = Math.round(
+                (completedSteps / 4) * 100
+              );
+
+              console.log("Profile data compiled successfully");
+              console.log("Progress:", profileData.progress);
+
+              res.json({ success: true, data: profileData });
+            });
+          });
+        });
+      } else {
+        // No mahasiswa data yet
+        console.log("No mahasiswa data found for user");
+        res.json({ success: true, data: profileData });
+      }
+    });
   });
 });
 
