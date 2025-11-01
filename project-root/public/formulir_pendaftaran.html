@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formulir Pendaftaran - Sistem Penerimaan Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style/formulir_pendaftaran.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="profile-section">
+          <div class="profile-avatar">P</div>
+          <div class="profile-name">Loading...</div>
+          <div class="profile-email">Loading...</div>
+        </div>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="menu-item active">
+            <i class="fas fa-file-alt"></i>
+            <span>Formulir Pendaftaran</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-bell"></i>
+            <span>Pengumuman</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+          </a>
+        </nav>
+
+        <div class="logout-section">
+          <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <h1>Formulir Pendaftaran</h1>
+          <div class="header-right">
+            <button class="notification-btn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Form Header -->
+          <div class="form-header-card">
+            <div>
+              <h2>Formulir Pendaftaran Mahasiswa Baru</h2>
+              <p>
+                Lengkapi semua informasi yang diperlukan untuk menyelesaikan
+                pendaftaran
+              </p>
+            </div>
+            <div class="step-badge">1 dari 5</div>
+          </div>
+
+          <!-- Steps -->
+          <div class="steps-container">
+            <div class="steps">
+              <div class="step active">
+                <div class="step-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="step-title">Data Pribadi</div>
+                <div class="step-subtitle">Informasi Personal dan Kontak</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="step-title">Data Akademik</div>
+                <div class="step-subtitle">
+                  Informasi Pendidikan dan Jurusan
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="step-title">Data Orang Tua</div>
+                <div class="step-subtitle">Informasi orang tua/wali</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="step-title">Upload Dokumen</div>
+                <div class="step-subtitle">Berkas dan Ijazah/SKHUN</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="step-title">Review & Submit</div>
+                <div class="step-subtitle">Upload berkas pendukung</div>
+              </div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-percentage">0%</div>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="form-card">
+            <div class="form-section-header">
+              <i class="fas fa-user"></i>
+              <div>
+                <h3>Data Pribadi</h3>
+                <p>Informasi personal dan kontak</p>
+              </div>
+            </div>
+
+            <div class="info-banner">
+              <i class="fas fa-info-circle"></i>
+              <strong>Panduan Pengisian:</strong><br />
+              • NIK: Maksimal 16 digit<br />
+              • Provinsi/Kabupaten/Kecamatan: Masukkan nomor ID (contoh: 11
+              untuk DKI Jakarta)<br />
+              • Kode Pos: Maksimal 6 digit<br />
+            </div>
+
+            <form id="dataForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="namaLengkap">Nama Lengkap</label>
+                  <input
+                    type="text"
+                    id="namaLengkap"
+                    class="form-control"
+                    placeholder="Masukkan nama lengkap"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="nik">NIK</label>
+                  <input
+                    type="text"
+                    id="nik"
+                    class="form-control"
+                    placeholder="Nomor Induk Kependudukan"
+                    maxlength="16"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Maksimal 16 digit</small
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="tempatLahir">Tempat Lahir</label>
+                  <input
+                    type="text"
+                    id="tempatLahir"
+                    class="form-control"
+                    placeholder="Kota kelahiran"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="tanggalLahir">Tanggal Lahir</label>
+                  <input type="date" id="tanggalLahir" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                  <label>Jenis Kelamin</label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input
+                        type="radio"
+                        id="lakiLaki"
+                        name="jenisKelamin"
+                        value="Laki-laki"
+                      />
+                      <label for="lakiLaki">Laki-laki</label>
+                    </div>
+                    <div class="radio-item">
+                      <input
+                        type="radio"
+                        id="perempuan"
+                        name="jenisKelamin"
+                        value="Perempuan"
+                      />
+                      <label for="perempuan">Perempuan</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="agama">Agama</label>
+                  <input
+                    type="text"
+                    id="agama"
+                    class="form-control"
+                    placeholder="Masukkan Agama"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="noHP">No. HP</label>
+                  <input
+                    type="tel"
+                    id="noHP"
+                    class="form-control"
+                    placeholder="Masukkan nomor HP"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    placeholder="Masukkan email"
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="alamat">Alamat</label>
+                  <input
+                    type="text"
+                    id="alamat"
+                    class="form-control"
+                    placeholder="Masukkan alamat lengkap"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="provinsi">Provinsi (ID)</label>
+                  <input
+                    type="number"
+                    id="provinsi"
+                    class="form-control"
+                    placeholder="Masukkan ID Provinsi (contoh: 11)"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Masukkan nomor ID provinsi (contoh: 11 untuk DKI
+                    Jakarta)</small
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="kabupatenKota">Kabupaten/Kota (ID)</label>
+                  <input
+                    type="number"
+                    id="kabupatenKota"
+                    class="form-control"
+                    placeholder="Masukkan ID Kabupaten/Kota"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Masukkan nomor ID kabupaten/kota</small
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="kecamatan">Kecamatan (ID)</label>
+                  <input
+                    type="number"
+                    id="kecamatan"
+                    class="form-control"
+                    placeholder="Masukkan ID Kecamatan"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Masukkan nomor ID kecamatan</small
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="kelurahan">Kelurahan (ID)</label>
+                  <input
+                    type="number"
+                    id="kelurahan"
+                    class="form-control"
+                    placeholder="Masukkan ID Kelurahan"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Masukkan nomor ID kelurahan</small
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="kodePos">Kode Pos</label>
+                  <input
+                    type="text"
+                    id="kodePos"
+                    class="form-control"
+                    placeholder="Kode Pos"
+                    maxlength="6"
+                  />
+                  <small style="color: #666; font-size: 12px"
+                    >* Maksimal 6 digit</small
+                  >
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="handlePrevious()"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                  Sebelumnya
+                </button>
+                <div style="display: flex; gap: 12px">
+                  <button
+                    type="button"
+                    class="btn btn-outline"
+                    onclick="handleSaveDraft()"
+                  >
+                    <i class="fas fa-save"></i>
+                    Simpan Draft
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Selanjutnya
+                    <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Idle Warning Modal -->
+    <div class="idle-overlay" id="idleOverlay">
+      <div class="idle-modal">
+        <div class="idle-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Sesi Anda Hampir Berakhir</h3>
+        <p>
+          Anda tidak aktif selama beberapa waktu. Sesi Anda akan berakhir dalam:
+        </p>
+        <div class="countdown-display" id="countdownDisplay">60</div>
+        <div class="idle-buttons">
+          <button class="btn-stay" onclick="stayLoggedIn()">
+            <i class="fas fa-check"></i> Tetap Login
+          </button>
+          <button class="btn-logout-now" onclick="logoutNow()">
+            <i class="fas fa-sign-out-alt"></i> Logout Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-overlay" id="logoutOverlay">
+      <div class="logout-modal">
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3>Konfirmasi Logout</h3>
+        <p>
+          Apakah Anda yakin ingin keluar dari sistem? Semua data yang belum
+          disimpan akan hilang.
+        </p>
+        <div class="logout-buttons">
+          <button class="btn-cancel" onclick="cancelLogout()">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button class="btn-confirm-logout" onclick="confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Ya, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = window.location.protocol + "//" + window.location.host;
+      let currentUser = null;
+
+      // ==================== KONFIGURASI AUTO-LOGOUT ====================
+      const IDLE_TIME = 1 * 60 * 1000; // 1 menit
+      const WARNING_TIME = 60; // 60 detik peringatan sebelum logout
+
+      let idleTimer = null;
+      let warningTimer = null;
+      let countdownInterval = null;
+      let countdownSeconds = 60;
+
+      // ==================== FUNGSI IDLE DETECTION ====================
+      function resetIdleTimer() {
+        // Clear existing timers
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        clearInterval(countdownInterval);
+
+        // Hide warning modal if showing
+        hideIdleWarning();
+
+        // Set new idle timer
+        idleTimer = setTimeout(() => {
+          showIdleWarning();
+        }, IDLE_TIME);
+      }
+
+      function showIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.add("show");
+
+        // Reset countdown
+        countdownSeconds = WARNING_TIME;
+        updateCountdownDisplay();
+
+        // Start countdown
+        countdownInterval = setInterval(() => {
+          countdownSeconds--;
+          updateCountdownDisplay();
+
+          if (countdownSeconds <= 0) {
+            autoLogout();
+          }
+        }, 1000);
+      }
+
+      function hideIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.remove("show");
+        clearInterval(countdownInterval);
+      }
+
+      function updateCountdownDisplay() {
+        const display = document.getElementById("countdownDisplay");
+        display.textContent = countdownSeconds;
+
+        // Change color based on urgency
+        if (countdownSeconds <= 10) {
+          display.style.color = "#ef4444";
+        } else if (countdownSeconds <= 30) {
+          display.style.color = "#f59e0b";
+        } else {
+          display.style.color = "#3182ce";
+        }
+      }
+
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function autoLogout() {
+        clearInterval(countdownInterval);
+        performAutoLogout();
+      }
+
+      function performAutoLogout() {
+        // Simpan informasi logout
+        const logoutInfo = {
+          reason: "idle_timeout",
+          timestamp: new Date().toISOString(),
+          lastPage: window.location.pathname,
+        };
+
+        console.log("Logout Info:", logoutInfo);
+
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect ke halaman login
+        alert(
+          "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+        );
+        window.location.href = "index.html";
+      }
+
+      // ==================== EVENT LISTENERS UNTUK AKTIVITAS ====================
+      const activityEvents = [
+        "mousedown",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart",
+        "click",
+      ];
+
+      // Add activity listeners
+      activityEvents.forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, true);
+      });
+
+      // ==================== PAGE VISIBILITY API ====================
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          // Reset timer when user comes back to the page
+          resetIdleTimer();
+        }
+      });
+
+      // Check submission status
+      async function checkSubmissionStatus() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          return false;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/api/check-submission/${currentUser.id}`
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            return result.hasSubmitted || false;
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+        }
+
+        return false;
+      }
+
+      // Check if user is logged in
+      document.addEventListener("DOMContentLoaded", async function () {
+        const userData =
+          sessionStorage.getItem("currentUser") ||
+          sessionStorage.getItem("user");
+        if (!userData) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        currentUser = JSON.parse(userData);
+        // Normalize session storage key
+        sessionStorage.setItem("currentUser", userData);
+
+        // Check if already submitted, redirect to review page
+        const hasSubmitted = await checkSubmissionStatus();
+        if (hasSubmitted) {
+          window.location.href = "formulir_pendaftaran_reviewandsubmit.html";
+          return;
+        }
+
+        loadUserData();
+
+        // Start idle timer immediately
+        resetIdleTimer();
+      });
+
+      // Load user data and populate form
+      async function loadUserData() {
+        try {
+          const response = await fetch(
+            `${API_URL}/api/user-data/${currentUser.id}`
+          );
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              updateUserInterface(result.data);
+              populateForm(result.data);
+            } else {
+              console.log("API returned false for user data, using fallback");
+              updateUserInterfaceFallback();
+            }
+          } else {
+            console.log("HTTP error loading user data, using fallback");
+            updateUserInterfaceFallback();
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+          updateUserInterfaceFallback();
+        }
+      }
+
+      // Update user interface
+      function updateUserInterface(userData) {
+        const name =
+          userData.nama_lengkap ||
+          currentUser.nama_lengkap ||
+          currentUser.username ||
+          "User";
+        const email =
+          userData.email ||
+          currentUser.email ||
+          currentUser.username ||
+          "user@example.com";
+
+        // Update sidebar profile
+        document.querySelector(".profile-name").textContent = name;
+        document.querySelector(".profile-email").textContent = email;
+
+        // Update avatar
+        const initials = getInitials(name);
+        document.querySelector(".profile-avatar").textContent = initials;
+      }
+
+      // Fallback using session storage
+      function updateUserInterfaceFallback() {
+        const name = currentUser.nama_lengkap || currentUser.username || "User";
+        const email =
+          currentUser.email || currentUser.username || "user@example.com";
+
+        document.querySelector(".profile-name").textContent = name;
+        document.querySelector(".profile-email").textContent = email;
+
+        const initials = getInitials(name);
+        document.querySelector(".profile-avatar").textContent = initials;
+      }
+
+      // Get initials from name
+      function getInitials(name) {
+        const words = name.trim().split(" ");
+        if (words.length >= 2) {
+          return (words[0][0] + words[1][0]).toUpperCase();
+        } else if (words.length === 1) {
+          return words[0].substring(0, 2).toUpperCase();
+        }
+        return "U";
+      }
+
+      // Populate form with existing data
+      function populateForm(userData) {
+        console.log("Populating form with data:", userData);
+
+        if (userData.nama_lengkap)
+          document.getElementById("namaLengkap").value = userData.nama_lengkap;
+        if (userData.nik) document.getElementById("nik").value = userData.nik;
+        if (userData.tempat_lahir)
+          document.getElementById("tempatLahir").value = userData.tempat_lahir;
+        if (userData.tanggal_lahir) {
+          // Format date for input field (YYYY-MM-DD)
+          const date = new Date(userData.tanggal_lahir);
+          const formattedDate = date.toISOString().split("T")[0];
+          document.getElementById("tanggalLahir").value = formattedDate;
+        }
+        if (userData.jenis_kelamin) {
+          const radio = document.querySelector(
+            `input[name="jenisKelamin"][value="${userData.jenis_kelamin}"]`
+          );
+          if (radio) radio.checked = true;
+        }
+        if (userData.agama)
+          document.getElementById("agama").value = userData.agama;
+        if (userData.no_hp)
+          document.getElementById("noHP").value = userData.no_hp;
+        if (userData.email)
+          document.getElementById("email").value = userData.email;
+        if (userData.alamat_mahasiswa)
+          document.getElementById("alamat").value = userData.alamat_mahasiswa;
+        if (userData.alamat)
+          document.getElementById("alamat").value = userData.alamat; // Fallback
+        if (userData.id_provinsi)
+          document.getElementById("provinsi").value = userData.id_provinsi;
+        if (userData.provinsi)
+          document.getElementById("provinsi").value = userData.provinsi; // Fallback
+        if (userData.id_kabupaten)
+          document.getElementById("kabupatenKota").value =
+            userData.id_kabupaten;
+        if (userData.kabupaten_kota)
+          document.getElementById("kabupatenKota").value =
+            userData.kabupaten_kota; // Fallback
+        if (userData.id_kecamatan)
+          document.getElementById("kecamatan").value = userData.id_kecamatan;
+        if (userData.kecamatan)
+          document.getElementById("kecamatan").value = userData.kecamatan; // Fallback
+        if (userData.id_kelurahan)
+          document.getElementById("kelurahan").value = userData.id_kelurahan;
+        if (userData.kelurahan)
+          document.getElementById("kelurahan").value = userData.kelurahan; // Fallback
+        if (userData.kode_pos)
+          document.getElementById("kodePos").value = userData.kode_pos;
+
+        console.log("Form populated successfully");
+      }
+
+      // Menu navigation
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", function (e) {
+          if (this.getAttribute("href") !== "#") return;
+          e.preventDefault();
+          menuItems.forEach((m) => m.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // Form submission
+      document
+        .getElementById("dataForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          console.log("=== FRONTEND DEBUG ===");
+          console.log("Current user:", currentUser);
+          console.log("Form submission started");
+
+          // Validate form
+          let isValid = true;
+          const formData = {};
+
+          // Collect and validate form data
+          const fields = [
+            "namaLengkap",
+            "nik",
+            "tempatLahir",
+            "tanggalLahir",
+            "agama",
+            "noHP",
+            "email",
+            "alamat",
+            "provinsi",
+            "kabupatenKota",
+            "kecamatan",
+            "kelurahan",
+            "kodePos",
+          ];
+
+          fields.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            const value = field.value.trim();
+
+            console.log(`Field ${fieldId}:`, value);
+
+            if (!value) {
+              isValid = false;
+              field.style.borderColor = "#ef4444";
+              console.log(`Field ${fieldId} is empty`);
+            } else {
+              field.style.borderColor = "#e2e8f0";
+              // Map field names to database column names
+              const fieldMapping = {
+                namaLengkap: "namaLengkap",
+                nik: "nik",
+                tempatLahir: "tempatLahir",
+                tanggalLahir: "tanggalLahir",
+                agama: "agama",
+                noHP: "noHP",
+                email: "email",
+                alamat: "alamat",
+                provinsi: "provinsi",
+                kabupatenKota: "kabupatenKota",
+                kecamatan: "kecamatan",
+                kelurahan: "kelurahan",
+                kodePos: "kodePos",
+              };
+              formData[fieldMapping[fieldId]] = value;
+            }
+          });
+
+          // Validate gender
+          const genderSelected = document.querySelector(
+            'input[name="jenisKelamin"]:checked'
+          );
+          if (!genderSelected) {
+            isValid = false;
+            document
+              .querySelectorAll('input[name="jenisKelamin"]')
+              .forEach((radio) => {
+                radio.closest(".radio-group").style.border =
+                  "1px solid #ef4444";
+              });
+            console.log("Gender not selected");
+          } else {
+            formData.jenisKelamin = genderSelected.value;
+            document
+              .querySelectorAll('input[name="jenisKelamin"]')
+              .forEach((radio) => {
+                radio.closest(".radio-group").style.border = "none";
+              });
+            console.log("Gender selected:", genderSelected.value);
+          }
+
+          console.log("Form validation result:", isValid);
+          console.log("Form data to send:", formData);
+
+          if (isValid) {
+            try {
+              // Show loading
+              showLoading(true);
+
+              const requestData = {
+                userId: currentUser.id,
+                ...formData,
+              };
+
+              console.log("Request data:", requestData);
+              console.log("API URL:", `${API_URL}/api/save-pribadi`);
+
+              // Send data to API
+              const response = await fetch(`${API_URL}/api/save-pribadi`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const result = await response.json();
+              console.log("Response status:", response.status);
+              console.log("Response result:", result);
+
+              showLoading(false);
+
+              if (result.success) {
+                showNotification(
+                  "success",
+                  "Berhasil",
+                  "Data pribadi berhasil disimpan! Mengalihkan ke halaman berikutnya..."
+                );
+                hasUnsavedChanges = false; // Reset unsaved changes flag
+
+                // Redirect to next form after 1.5 seconds
+                setTimeout(() => {
+                  console.log("Redirecting to data akademik...");
+                  window.location.href =
+                    "formulir_pendaftaran_dataakademik.html";
+                }, 1500);
+              } else {
+                showNotification(
+                  "error",
+                  "Gagal",
+                  result.message || "Gagal menyimpan data"
+                );
+                console.error("API returned error:", result.message);
+              }
+            } catch (error) {
+              showLoading(false);
+              console.error("Save error:", error);
+
+              if (
+                error.message.includes("Failed to fetch") ||
+                error.message.includes("ERR_CONNECTION_REFUSED")
+              ) {
+                showNotification(
+                  "error",
+                  "Koneksi Gagal",
+                  "Tidak dapat terhubung ke server. Pastikan server berjalan dan periksa koneksi internet Anda."
+                );
+              } else {
+                showNotification(
+                  "error",
+                  "Kesalahan",
+                  "Terjadi kesalahan: " + error.message
+                );
+              }
+            }
+          } else {
+            showNotification(
+              "error",
+              "Validasi Gagal",
+              "Mohon lengkapi semua field yang diperlukan"
+            );
+          }
+        });
+
+      // Handle previous button
+      function handlePrevious() {
+        const message = hasUnsavedChanges
+          ? "Kembali ke dashboard? Perubahan yang belum disimpan akan hilang."
+          : "Kembali ke dashboard?";
+
+        if (confirm(message)) {
+          window.location.href = "dashboard.html";
+        }
+      }
+
+      // Handle save draft
+      async function handleSaveDraft() {
+        // Collect form data
+        let isValid = true;
+        const formData = {};
+
+        // Collect form data (similar to form submission but without requiring all fields)
+        const fields = [
+          "namaLengkap",
+          "nik",
+          "tempatLahir",
+          "tanggalLahir",
+          "agama",
+          "noHP",
+          "email",
+          "alamat",
+          "provinsi",
+          "kabupatenKota",
+          "kecamatan",
+          "kelurahan",
+          "kodePos",
+        ];
+
+        fields.forEach((fieldId) => {
+          const field = document.getElementById(fieldId);
+          const value = field.value.trim();
+          const fieldMapping = {
+            namaLengkap: "namaLengkap",
+            nik: "nik",
+            tempatLahir: "tempatLahir",
+            tanggalLahir: "tanggalLahir",
+            agama: "agama",
+            noHP: "noHP",
+            email: "email",
+            alamat: "alamat",
+            provinsi: "provinsi",
+            kabupatenKota: "kabupatenKota",
+            kecamatan: "kecamatan",
+            kelurahan: "kelurahan",
+            kodePos: "kodePos",
+          };
+          formData[fieldMapping[fieldId]] = value;
+        });
+
+        // Get gender
+        const genderSelected = document.querySelector(
+          'input[name="jenisKelamin"]:checked'
+        );
+        if (genderSelected) {
+          formData.jenisKelamin = genderSelected.value;
+        }
+
+        try {
+          showLoading(true);
+
+          const requestData = {
+            userId: currentUser.id,
+            ...formData,
+          };
+
+          const response = await fetch(`${API_URL}/api/save-pribadi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          const result = await response.json();
+          showLoading(false);
+
+          if (result.success) {
+            showNotification("success", "Berhasil", "Draft berhasil disimpan!");
+            hasUnsavedChanges = false; // Reset unsaved changes flag
+          } else {
+            showNotification(
+              "error",
+              "Gagal",
+              result.message || "Gagal menyimpan draft"
+            );
+          }
+        } catch (error) {
+          showLoading(false);
+          console.error("Save draft error:", error);
+          showNotification(
+            "error",
+            "Kesalahan Koneksi",
+            "Tidak dapat terhubung ke server"
+          );
+        }
+      }
+
+      // Track if form has unsaved changes
+      let hasUnsavedChanges = false;
+
+      // Track form changes
+      formInputs.forEach((input) => {
+        input.addEventListener("input", function () {
+          hasUnsavedChanges = true;
+        });
+      });
+
+      // Logout function
+      function handleLogout() {
+        showLogoutModal();
+      }
+
+      // Show logout confirmation modal
+      function showLogoutModal() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.add("show");
+      }
+
+      // Cancel logout
+      function cancelLogout() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.remove("show");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        performLogout();
+      }
+
+      function performLogout() {
+        // Clear session storage
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect to login page
+        window.location.href = "index.html";
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("DOMContentLoaded", function () {
+        const logoutOverlay = document.getElementById("logoutOverlay");
+        if (logoutOverlay) {
+          logoutOverlay.addEventListener("click", function (e) {
+            if (e.target === this) {
+              cancelLogout();
+            }
+          });
+        }
+      });
+
+      // Show loading overlay
+      function showLoading(show) {
+        let overlay = document.getElementById("loading-overlay");
+        if (!overlay) {
+          overlay = document.createElement("div");
+          overlay.id = "loading-overlay";
+          overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                `;
+          overlay.innerHTML = `
+                    <div style="background: white; padding: 40px; border-radius: 12px; text-align: center;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 50px; color: #365368; margin-bottom: 20px;"></i>
+                        <p style="color: #365368; font-weight: 600; font-size: 16px;">Menyimpan data...</p>
+                    </div>
+                `;
+          document.body.appendChild(overlay);
+        }
+        overlay.style.display = show ? "flex" : "none";
+      }
+
+      // Show notification
+      function showNotification(type, title, message) {
+        let notification = document.getElementById("form-notification");
+        if (!notification) {
+          notification = document.createElement("div");
+          notification.id = "form-notification";
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 18px 24px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                    transform: translateX(120%);
+                    transition: transform 0.3s ease;
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-width: 300px;
+                `;
+          document.body.appendChild(notification);
+        }
+
+        const iconClass =
+          type === "success" ? "fa-check-circle" : "fa-exclamation-circle";
+        const iconColor = type === "success" ? "#4caf50" : "#f44336";
+
+        notification.innerHTML = `
+                <i class="fas ${iconClass}" style="font-size: 24px; color: ${iconColor};"></i>
+                <div>
+                    <div style="font-weight: 600; font-size: 15px; color: #333; margin-bottom: 4px;">${title}</div>
+                    <div style="font-size: 14px; color: #666;">${message}</div>
+                </div>
+            `;
+
+        notification.style.transform = "translateX(0)";
+
+        setTimeout(() => {
+          notification.style.transform = "translateX(120%)";
+        }, 3000);
+      }
+
+      // Auto-save functionality
+      let autoSaveTimer;
+      const formInputs = document.querySelectorAll(
+        '.form-control, input[name="jenisKelamin"]'
+      );
+
+      formInputs.forEach((input) => {
+        input.addEventListener("input", function () {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = setTimeout(() => {
+            console.log("Auto-saving draft...");
+            autoSaveDraft();
+          }, 10000); // Auto-save after 10 seconds of inactivity
+        });
+      });
+
+      // Auto-save draft function
+      async function autoSaveDraft() {
+        // Collect form data without validation
+        const formData = {};
+        const fields = [
+          "namaLengkap",
+          "nik",
+          "tempatLahir",
+          "tanggalLahir",
+          "agama",
+          "noHP",
+          "email",
+          "alamat",
+          "provinsi",
+          "kabupatenKota",
+          "kecamatan",
+          "kelurahan",
+          "kodePos",
+        ];
+
+        fields.forEach((fieldId) => {
+          const field = document.getElementById(fieldId);
+          if (field && field.value.trim()) {
+            const fieldMapping = {
+              namaLengkap: "namaLengkap",
+              nik: "nik",
+              tempatLahir: "tempatLahir",
+              tanggalLahir: "tanggalLahir",
+              agama: "agama",
+              noHP: "noHP",
+              email: "email",
+              alamat: "alamat",
+              provinsi: "provinsi",
+              kabupatenKota: "kabupatenKota",
+              kecamatan: "kecamatan",
+              kelurahan: "kelurahan",
+              kodePos: "kodePos",
+            };
+            formData[fieldMapping[fieldId]] = field.value.trim();
+          }
+        });
+
+        // Get gender
+        const genderSelected = document.querySelector(
+          'input[name="jenisKelamin"]:checked'
+        );
+        if (genderSelected) {
+          formData.jenisKelamin = genderSelected.value;
+        }
+
+        // Only auto-save if there's data to save
+        if (Object.keys(formData).length === 0) {
+          return;
+        }
+
+        try {
+          const requestData = {
+            userId: currentUser.id,
+            ...formData,
+          };
+
+          const response = await fetch(`${API_URL}/api/save-pribadi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (response.ok) {
+            console.log("Auto-save successful");
+            hasUnsavedChanges = false; // Reset unsaved changes flag
+            // Show subtle auto-save indicator
+            showAutoSaveIndicator();
+          } else {
+            console.log("Auto-save failed");
+          }
+        } catch (error) {
+          console.error("Auto-save error:", error);
+        }
+      }
+
+      // Show auto-save indicator
+      function showAutoSaveIndicator() {
+        let indicator = document.getElementById("autosave-indicator");
+        if (!indicator) {
+          indicator = document.createElement("div");
+          indicator.id = "autosave-indicator";
+          indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: #4caf50;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                `;
+          indicator.innerHTML =
+            '<i class="fas fa-check" style="margin-right: 5px;"></i>Data tersimpan otomatis';
+          document.body.appendChild(indicator);
+        }
+
+        indicator.style.opacity = "1";
+        setTimeout(() => {
+          indicator.style.opacity = "0";
+        }, 2000);
+      }
+
+      // Animate progress on load
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          document.getElementById("progressFill").style.width = "0%";
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

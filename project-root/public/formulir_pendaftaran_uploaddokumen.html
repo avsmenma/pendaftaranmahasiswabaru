@@ -1,0 +1,2874 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Dokumen - Sistem Penerimaan Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: #f5f7fa;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background: #365368;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo {
+        padding: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .logo h2 {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .profile-section {
+        padding: 24px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 12px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: #2c5282;
+        font-weight: 700;
+      }
+
+      .profile-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .profile-email {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .menu {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        margin-bottom: 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: white;
+      }
+
+      .menu-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .menu-item.active {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .menu-item i {
+        width: 20px;
+        margin-right: 12px;
+        font-size: 16px;
+      }
+
+      .logout-section {
+        padding: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .logout-btn {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: transparent;
+        border: none;
+        color: white;
+        width: 100%;
+        font-size: 14px;
+      }
+
+      .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      .logout-btn i {
+        margin-right: 12px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header {
+        background: white;
+        padding: 20px 32px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #365368;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .notification-btn {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #f7fafc;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+
+      .notification-btn:hover {
+        background: #edf2f7;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+      }
+
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 32px;
+      }
+
+      /* Form Header Card */
+      .form-header-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .form-header-card h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 4px;
+      }
+
+      .form-header-card p {
+        font-size: 13px;
+        color: #718096;
+      }
+
+      .step-badge {
+        background: #e2e8f0;
+        color: #2d3748;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      /* Step Icons */
+      .steps-container {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        position: relative;
+      }
+
+      .steps::before {
+        content: "";
+        position: absolute;
+        top: 32px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: #e2e8f0;
+        z-index: 0;
+      }
+
+      .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        flex: 1;
+        position: relative;
+        z-index: 1;
+      }
+
+      .step-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        transition: all 0.3s;
+      }
+
+      .step.active .step-icon {
+        background: #3182ce;
+        border-color: #3182ce;
+      }
+
+      .step.completed .step-icon {
+        background: #48bb78;
+        border-color: #48bb78;
+      }
+
+      .step-icon i {
+        font-size: 24px;
+        color: #cbd5e0;
+      }
+
+      .step.active .step-icon i,
+      .step.completed .step-icon i {
+        color: white;
+      }
+
+      .step-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 4px;
+      }
+
+      .step.active .step-title {
+        color: #1a202c;
+      }
+
+      .step-subtitle {
+        font-size: 11px;
+        color: #a0aec0;
+      }
+
+      .progress-bar-container {
+        margin-bottom: 8px;
+        text-align: right;
+      }
+
+      .progress-percentage {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+      }
+
+      .progress-bar {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3182ce 0%, #4299e1 100%);
+        border-radius: 3px;
+        transition: width 1s ease-out;
+      }
+
+      /* Form Card */
+      .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .form-section-header i {
+        font-size: 20px;
+        color: #3182ce;
+        margin-right: 12px;
+      }
+
+      .form-section-header div h3 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 4px;
+      }
+
+      .form-section-header div p {
+        font-size: 13px;
+        color: #718096;
+      }
+
+      .info-banner {
+        background: #ebf8ff;
+        border-left: 4px solid #3182ce;
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: #2c5282;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .info-banner i {
+        margin-top: 2px;
+      }
+
+      /* Upload Grid */
+      .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 32px;
+      }
+
+      .upload-card {
+        border: 2px dashed #cbd5e0;
+        border-radius: 8px;
+        padding: 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #f7fafc;
+        position: relative;
+      }
+
+      .upload-card:hover {
+        border-color: #3182ce;
+        background: #ebf8ff;
+      }
+
+      .upload-card.uploaded {
+        border-color: #48bb78;
+        border-style: solid;
+        background: #f0fff4;
+      }
+
+      .upload-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 50%;
+        border: 2px solid #e2e8f0;
+      }
+
+      .upload-card.uploaded .upload-icon {
+        background: #48bb78;
+        border-color: #48bb78;
+      }
+
+      .upload-icon i {
+        font-size: 24px;
+        color: #a0aec0;
+      }
+
+      .upload-card.uploaded .upload-icon i {
+        color: white;
+      }
+
+      .upload-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+      }
+
+      .upload-subtitle {
+        font-size: 12px;
+        color: #718096;
+        margin-bottom: 12px;
+      }
+
+      .upload-btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #2d3748;
+        transition: all 0.2s;
+      }
+
+      .upload-card:hover .upload-btn {
+        border-color: #3182ce;
+        color: #3182ce;
+      }
+
+      .file-info {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #48bb78;
+        font-weight: 500;
+      }
+
+      .remove-file {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        background: #ef4444;
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      .upload-card.uploaded .remove-file {
+        display: flex;
+      }
+
+      .remove-file:hover {
+        background: #dc2626;
+      }
+
+      .preview-file {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 32px;
+        height: 32px;
+        background: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .upload-card.uploaded .preview-file {
+        display: flex;
+      }
+
+      .preview-file:hover {
+        background: #2c5282;
+        transform: scale(1.1);
+      }
+
+      /* Preview Modal */
+      .preview-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .preview-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .preview-modal {
+        background: white;
+        border-radius: 12px;
+        max-width: 90%;
+        max-height: 90%;
+        width: 800px;
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .preview-overlay.show .preview-modal {
+        transform: scale(1);
+      }
+
+      .preview-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f7fafc;
+        border-radius: 12px 12px 0 0;
+      }
+
+      .preview-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .preview-close {
+        width: 32px;
+        height: 32px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #4a5568;
+        transition: all 0.2s;
+      }
+
+      .preview-close:hover {
+        background: #cbd5e0;
+        color: #2d3748;
+      }
+
+      .preview-content {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-pdf {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 8px;
+      }
+
+      .preview-unsupported {
+        text-align: center;
+        color: #718096;
+        padding: 40px;
+      }
+
+      .preview-unsupported i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #a0aec0;
+      }
+
+      .preview-unsupported h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #4a5568;
+      }
+
+      .preview-unsupported p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .preview-actions {
+        padding: 16px 20px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 12px;
+        background: #f7fafc;
+        border-radius: 0 0 12px 12px;
+      }
+
+      .preview-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .preview-download {
+        background: #3182ce;
+        color: white;
+      }
+
+      .preview-download:hover {
+        background: #2c5282;
+      }
+
+      .preview-info {
+        background: #e2e8f0;
+        color: #4a5568;
+      }
+
+      .preview-info:hover {
+        background: #cbd5e0;
+      }
+
+      /* Form Actions */
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 2px solid #e2e8f0;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-secondary {
+        background: #e2e8f0;
+        color: #2d3748;
+      }
+
+      .btn-secondary:hover {
+        background: #cbd5e0;
+      }
+
+      .btn-outline {
+        background: white;
+        color: #3182ce;
+        border: 2px solid #3182ce;
+      }
+
+      .btn-outline:hover {
+        background: #ebf8ff;
+      }
+
+      .btn-primary {
+        background: #3182ce;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #2c5282;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(49, 130, 206, 0.3);
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn:disabled:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Hidden file input */
+      input[type="file"] {
+        display: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 240px;
+        }
+
+        .content {
+          padding: 20px;
+        }
+
+        .upload-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .steps {
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+
+        .steps::before {
+          display: none;
+        }
+
+        .form-actions {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* ==================== AUTO LOGOUT MODAL STYLES ==================== */
+      .idle-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .idle-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .idle-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .idle-overlay.show .idle-modal {
+        transform: scale(1);
+      }
+
+      .idle-icon {
+        width: 80px;
+        height: 80px;
+        background: #fef3c7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .idle-icon i {
+        font-size: 32px;
+        color: #f59e0b;
+      }
+
+      .idle-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .idle-modal p {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .countdown-display {
+        font-size: 48px;
+        font-weight: 700;
+        color: #3182ce;
+        margin-bottom: 32px;
+        font-family: "Inter", monospace;
+      }
+
+      .idle-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .btn-stay,
+      .btn-logout-now {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-stay {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-stay:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+
+      .btn-logout-now {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-logout-now:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+      }
+
+      @media (max-width: 480px) {
+        .idle-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .idle-buttons {
+          flex-direction: column;
+        }
+
+        .btn-stay,
+        .btn-logout-now {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Logout Confirmation Modal */
+      .logout-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .logout-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .logout-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .logout-overlay.show .logout-modal {
+        transform: scale(1);
+      }
+
+      .logout-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        animation: pulse-red 2s infinite;
+      }
+
+      .logout-icon i {
+        font-size: 32px;
+        color: white;
+      }
+
+      @keyframes pulse-red {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
+
+      .logout-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 12px;
+      }
+
+      .logout-modal p {
+        font-size: 16px;
+        color: #4a5568;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .logout-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn-cancel {
+        flex: 1;
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+      }
+
+      .btn-confirm-logout {
+        flex: 1;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-confirm-logout:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-cancel i,
+      .btn-confirm-logout i {
+        font-size: 16px;
+      }
+
+      @media (max-width: 480px) {
+        .logout-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .logout-icon {
+          width: 60px;
+          height: 60px;
+        }
+
+        .logout-icon i {
+          font-size: 24px;
+        }
+
+        .logout-modal h3 {
+          font-size: 20px;
+        }
+
+        .logout-buttons {
+          flex-direction: column;
+        }
+
+        .btn-cancel,
+        .btn-confirm-logout {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="profile-section">
+          <div class="profile-avatar">MA</div>
+          <div class="profile-name">Loading...</div>
+          <div class="profile-email">Loading...</div>
+        </div>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="menu-item active">
+            <i class="fas fa-file-alt"></i>
+            <span>Formulir Pendaftaran</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-bell"></i>
+            <span>Pengumuman</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+          </a>
+        </nav>
+
+        <div class="logout-section">
+          <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <h1>Formulir Pendaftaran</h1>
+          <div class="header-right">
+            <button class="notification-btn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Form Header -->
+          <div class="form-header-card">
+            <div>
+              <h2>Formulir Pendaftaran Mahasiswa Baru</h2>
+              <p>
+                Lengkapi semua informasi yang diperlukan untuk menyelesaikan
+                pendaftaran
+              </p>
+            </div>
+            <div class="step-badge">4 dari 5</div>
+          </div>
+
+          <!-- Steps -->
+          <div class="steps-container">
+            <div class="steps">
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Pribadi</div>
+                <div class="step-subtitle">Informasi Personal dan Kontak</div>
+              </div>
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Akademik</div>
+                <div class="step-subtitle">
+                  Informasi Pendidikan dan Jurusan
+                </div>
+              </div>
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Orang Tua</div>
+                <div class="step-subtitle">Informasi orang tua/wali</div>
+              </div>
+              <div class="step active">
+                <div class="step-icon">
+                  <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="step-title">Upload Dokumen</div>
+                <div class="step-subtitle">Periksa dan kirim data</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="step-title">Review & Submit</div>
+                <div class="step-subtitle">Upload berkas pendukung</div>
+              </div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-percentage">60%</div>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 60%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="form-card">
+            <div class="form-section-header">
+              <i class="fas fa-file-upload"></i>
+              <div>
+                <h3>Upload Dokumen</h3>
+                <p>Upload berkas pendukung</p>
+              </div>
+            </div>
+
+            <div class="info-banner">
+              <i class="fas fa-info-circle"></i>
+              <div>
+                Silakan mengupload file dokumen dan berkas pendukung berupa scan
+                atau foto dengan format PDF, JPG, atau PNG. Ukuran file maksimal
+                2 MB
+              </div>
+            </div>
+
+            <form id="uploadForm">
+              <div class="upload-grid">
+                <!-- Ijazah/SKL -->
+                <div
+                  class="upload-card"
+                  id="ijazahCard"
+                  onclick="document.getElementById('ijazahInput').click()"
+                >
+                  <button
+                    type="button"
+                    class="remove-file"
+                    onclick="event.stopPropagation(); removeFile('ijazah')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="preview-file"
+                    onclick="event.stopPropagation(); previewFile('ijazah')"
+                    title="Preview dokumen"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="upload-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <div class="upload-title">Ijazah/SKL</div>
+                  <div class="upload-subtitle">(Max 2 MB: JPG)</div>
+                  <div class="upload-btn">Pilih File</div>
+                  <div class="file-info" id="ijazahInfo"></div>
+                  <input
+                    type="file"
+                    id="ijazahInput"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onchange="handleFileUpload('ijazah', this)"
+                  />
+                </div>
+
+                <!-- Kartu Keluarga -->
+                <div
+                  class="upload-card"
+                  id="kartuKeluargaCard"
+                  onclick="document.getElementById('kartuKeluargaInput').click()"
+                >
+                  <button
+                    type="button"
+                    class="remove-file"
+                    onclick="event.stopPropagation(); removeFile('kartuKeluarga')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="preview-file"
+                    onclick="event.stopPropagation(); previewFile('kartuKeluarga')"
+                    title="Preview dokumen"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="upload-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <div class="upload-title">Kartu Keluarga</div>
+                  <div class="upload-subtitle">(Max 2 MB: JPG)</div>
+                  <div class="upload-btn">Pilih File</div>
+                  <div class="file-info" id="kartuKeluargaInfo"></div>
+                  <input
+                    type="file"
+                    id="kartuKeluargaInput"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onchange="handleFileUpload('kartuKeluarga', this)"
+                  />
+                </div>
+
+                <!-- Akta Kelahiran -->
+                <div
+                  class="upload-card"
+                  id="aktaKelahiranCard"
+                  onclick="document.getElementById('aktaKelahiranInput').click()"
+                >
+                  <button
+                    type="button"
+                    class="remove-file"
+                    onclick="event.stopPropagation(); removeFile('aktaKelahiran')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="preview-file"
+                    onclick="event.stopPropagation(); previewFile('aktaKelahiran')"
+                    title="Preview dokumen"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="upload-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <div class="upload-title">Akta Kelahiran</div>
+                  <div class="upload-subtitle">(Max 2 MB: JPG)</div>
+                  <div class="upload-btn">Pilih File</div>
+                  <div class="file-info" id="aktaKelahiranInfo"></div>
+                  <input
+                    type="file"
+                    id="aktaKelahiranInput"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onchange="handleFileUpload('aktaKelahiran', this)"
+                  />
+                </div>
+
+                <!-- Pas Foto 3x4 -->
+                <div
+                  class="upload-card"
+                  id="pasFotoCard"
+                  onclick="document.getElementById('pasFotoInput').click()"
+                >
+                  <button
+                    type="button"
+                    class="remove-file"
+                    onclick="event.stopPropagation(); removeFile('pasFoto')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="preview-file"
+                    onclick="event.stopPropagation(); previewFile('pasFoto')"
+                    title="Preview dokumen"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <div class="upload-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <div class="upload-title">Pas Foto 3x4</div>
+                  <div class="upload-subtitle">(Max 2 MB: JPG)</div>
+                  <div class="upload-btn">Pilih File</div>
+                  <div class="file-info" id="pasFotoInfo"></div>
+                  <input
+                    type="file"
+                    id="pasFotoInput"
+                    accept=".jpg,.jpeg,.png"
+                    onchange="handleFileUpload('pasFoto', this)"
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="handlePrevious()"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                  Sebelumnya
+                </button>
+                <div style="display: flex; gap: 12px">
+                  <button
+                    type="button"
+                    class="btn btn-outline"
+                    onclick="handleSaveDraft()"
+                  >
+                    <i class="fas fa-save"></i>
+                    Simpan Draft
+                  </button>
+                  <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Selanjutnya
+                    <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Idle Warning Modal -->
+    <div class="idle-overlay" id="idleOverlay">
+      <div class="idle-modal">
+        <div class="idle-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Sesi Anda Hampir Berakhir</h3>
+        <p>
+          Anda tidak aktif selama beberapa waktu. Sesi Anda akan berakhir dalam:
+        </p>
+        <div class="countdown-display" id="countdownDisplay">60</div>
+        <div class="idle-buttons">
+          <button class="btn-stay" onclick="stayLoggedIn()">
+            <i class="fas fa-check"></i> Tetap Login
+          </button>
+          <button class="btn-logout-now" onclick="logoutNow()">
+            <i class="fas fa-sign-out-alt"></i> Logout Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-overlay" id="logoutOverlay">
+      <div class="logout-modal">
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3>Konfirmasi Logout</h3>
+        <p>
+          Apakah Anda yakin ingin keluar dari sistem? Semua data yang belum
+          disimpan akan hilang.
+        </p>
+        <div class="logout-buttons">
+          <button class="btn-cancel" onclick="cancelLogout()">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button class="btn-confirm-logout" onclick="confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Ya, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="preview-overlay" id="previewOverlay">
+      <div class="preview-modal">
+        <div class="preview-header">
+          <div class="preview-title">
+            <i class="fas fa-eye"></i>
+            <span id="previewTitle">Preview Dokumen</span>
+          </div>
+          <button class="preview-close" onclick="closePreview()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="preview-content" id="previewContent">
+          <!-- Content will be dynamically inserted here -->
+        </div>
+        <div class="preview-actions">
+          <button class="preview-btn preview-download" onclick="downloadFile()">
+            <i class="fas fa-download"></i>
+            Download
+          </button>
+          <button class="preview-btn preview-info" onclick="showFileInfo()">
+            <i class="fas fa-info-circle"></i>
+            Info File
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Konfigurasi API
+      const API_URL = "http://localhost:3000";
+
+      // Storage for uploaded files
+      const uploadedFiles = {
+        ijazah: null,
+        kartuKeluarga: null,
+        aktaKelahiran: null,
+        pasFoto: null,
+      };
+
+      // ==================== GLOBAL FUNCTIONS ====================
+      // These functions need to be accessible from HTML onclick/onchange handlers
+
+      // Preview file function
+      function previewFile(type) {
+        console.log(`=== PREVIEW FILE DEBUG ===`);
+        console.log(`Previewing file type: ${type}`);
+        console.log(`Uploaded file:`, uploadedFiles[type]);
+
+        if (!uploadedFiles[type]) {
+          console.log("No file found for preview");
+          showNotification(
+            "error",
+            "File Tidak Ditemukan",
+            "Tidak ada file untuk di-preview"
+          );
+          return;
+        }
+
+        const file = uploadedFiles[type];
+        const overlay = document.getElementById("previewOverlay");
+        const title = document.getElementById("previewTitle");
+        const content = document.getElementById("previewContent");
+
+        // Set title
+        const typeNames = {
+          ijazah: "Ijazah/SKL",
+          kartuKeluarga: "Kartu Keluarga",
+          aktaKelahiran: "Akta Kelahiran",
+          pasFoto: "Pas Foto 3x4",
+        };
+        title.textContent = `Preview ${typeNames[type] || type}`;
+
+        // Create preview content based on file type
+        let previewHTML = "";
+
+        if (file.fromDatabase && file.path) {
+          // File from database - use server path
+          const fileUrl = `${API_URL}/${file.path}`;
+          console.log(`File URL: ${fileUrl}`);
+
+          if (file.type.includes("image/")) {
+            previewHTML = `<img src="${fileUrl}" class="preview-image" alt="${file.name}" />`;
+          } else if (file.type.includes("pdf")) {
+            previewHTML = `<iframe src="${fileUrl}" class="preview-pdf"></iframe>`;
+          } else {
+            previewHTML = createUnsupportedPreview(file);
+          }
+        } else {
+          // Local file - create object URL
+          const input = document.getElementById(`${type}Input`);
+          if (input && input.files && input.files[0]) {
+            const fileObj = input.files[0];
+            const fileUrl = URL.createObjectURL(fileObj);
+            console.log(`Local file URL: ${fileUrl}`);
+
+            if (fileObj.type.includes("image/")) {
+              previewHTML = `<img src="${fileUrl}" class="preview-image" alt="${fileObj.name}" />`;
+            } else if (fileObj.type.includes("pdf")) {
+              previewHTML = `<iframe src="${fileUrl}" class="preview-pdf"></iframe>`;
+            } else {
+              previewHTML = createUnsupportedPreview(fileObj);
+            }
+          } else {
+            previewHTML = createUnsupportedPreview(file);
+          }
+        }
+
+        content.innerHTML = previewHTML;
+        overlay.classList.add("show");
+
+        // Store current file info for download
+        window.currentPreviewFile = { type, file };
+      }
+
+      // Create unsupported file preview
+      function createUnsupportedPreview(file) {
+        return `
+          <div class="preview-unsupported">
+            <i class="fas fa-file"></i>
+            <h3>Preview Tidak Tersedia</h3>
+            <p>File <strong>${file.name}</strong> tidak dapat di-preview di browser.</p>
+            <p>Gunakan tombol Download untuk mengunduh file.</p>
+          </div>
+        `;
+      }
+
+      // Close preview modal
+      function closePreview() {
+        const overlay = document.getElementById("previewOverlay");
+        overlay.classList.remove("show");
+
+        // Clean up object URLs
+        const images = overlay.querySelectorAll('img[src^="blob:"]');
+        images.forEach((img) => {
+          URL.revokeObjectURL(img.src);
+        });
+
+        window.currentPreviewFile = null;
+      }
+
+      // Download current preview file
+      function downloadFile() {
+        if (!window.currentPreviewFile) {
+          showNotification("error", "Error", "Tidak ada file untuk diunduh");
+          return;
+        }
+
+        const { type, file } = window.currentPreviewFile;
+        console.log(`Downloading file:`, file);
+
+        if (file.fromDatabase && file.path) {
+          // Download from server
+          const fileUrl = `${API_URL}/${file.path}`;
+          const link = document.createElement("a");
+          link.href = fileUrl;
+          link.download = file.name;
+          link.click();
+        } else {
+          // Download local file
+          const input = document.getElementById(`${type}Input`);
+          if (input && input.files && input.files[0]) {
+            const fileObj = input.files[0];
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(fileObj);
+            link.download = fileObj.name;
+            link.click();
+            URL.revokeObjectURL(link.href);
+          }
+        }
+
+        showNotification(
+          "success",
+          "Download Dimulai",
+          "File sedang diunduh..."
+        );
+      }
+
+      // Show file info
+      function showFileInfo() {
+        if (!window.currentPreviewFile) {
+          showNotification("error", "Error", "Tidak ada informasi file");
+          return;
+        }
+
+        const { type, file } = window.currentPreviewFile;
+        const typeNames = {
+          ijazah: "Ijazah/SKL",
+          kartuKeluarga: "Kartu Keluarga",
+          aktaKelahiran: "Akta Kelahiran",
+          pasFoto: "Pas Foto 3x4",
+        };
+
+        const info = `
+          <strong>Jenis Dokumen:</strong> ${typeNames[type] || type}<br>
+          <strong>Nama File:</strong> ${file.name}<br>
+          <strong>Ukuran:</strong> ${
+            file.size ? formatFileSize(file.size) : "Tidak diketahui"
+          }<br>
+          <strong>Tipe:</strong> ${file.type || "Tidak diketahui"}<br>`;
+
+        showNotification("info", "Informasi File", info);
+      }
+
+      // Handle file upload
+      function handleFileUpload(type, input) {
+        const file = input.files[0];
+        console.log(`=== FILE UPLOAD DEBUG ===`);
+        console.log(`Type: ${type}`);
+        console.log(`Input files length: ${input.files.length}`);
+        console.log(`File:`, file);
+
+        if (!file) {
+          console.log("No file selected");
+          return;
+        }
+
+        // Validate file size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+          showNotification(
+            "error",
+            "File Terlalu Besar",
+            "Ukuran file maksimal 2 MB"
+          );
+          input.value = "";
+          return;
+        }
+
+        // Validate file type
+        const allowedTypes = [
+          "image/jpeg",
+          "image/jpg",
+          "image/png",
+          "application/pdf",
+        ];
+        console.log(`File type: ${file.type}`);
+        console.log(`Allowed types:`, allowedTypes);
+
+        if (!allowedTypes.includes(file.type)) {
+          showNotification(
+            "error",
+            "Format File Tidak Didukung",
+            "Gunakan JPG, PNG, atau PDF"
+          );
+          input.value = "";
+          return;
+        }
+
+        // Store file info
+        uploadedFiles[type] = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        };
+
+        console.log(`File info stored for ${type}:`, uploadedFiles[type]);
+        console.log(`Updated uploadedFiles object:`, uploadedFiles);
+
+        // Update UI
+        const card = document.getElementById(`${type}Card`);
+        const info = document.getElementById(`${type}Info`);
+
+        if (card && info) {
+          card.classList.add("uploaded");
+          info.textContent = `✓ ${file.name} (${formatFileSize(file.size)})`;
+          console.log(`UI updated for ${type}`);
+        } else {
+          console.error(`Card or info element not found for ${type}`);
+        }
+
+        // Save to storage
+        saveFormData("uploads", uploadedFiles);
+        checkAllFilesUploaded();
+
+        console.log(`File processed successfully: ${type}`, file.name);
+        console.log(`Current uploaded files:`, uploadedFiles);
+        console.log(
+          `All files uploaded?`,
+          Object.values(uploadedFiles).every((f) => f !== null)
+        );
+      }
+
+      // Remove file
+      async function removeFile(type) {
+        uploadedFiles[type] = null;
+
+        const card = document.getElementById(`${type}Card`);
+        const info = document.getElementById(`${type}Info`);
+        const input = document.getElementById(`${type}Input`);
+
+        card.classList.remove("uploaded");
+        info.textContent = "";
+        input.value = "";
+
+        // If file was from database, ask user if they want to delete it from database too
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (
+          currentUser &&
+          uploadedFiles[type] &&
+          uploadedFiles[type].fromDatabase
+        ) {
+          if (
+            confirm(
+              `Apakah Anda ingin menghapus dokumen "${uploadedFiles[type].name}" dari database juga?`
+            )
+          ) {
+            try {
+              const response = await fetch(
+                `${API_URL}/api/delete-dokumen/${uploadedFiles[type].id}`,
+                {
+                  method: "DELETE",
+                }
+              );
+
+              if (response.ok) {
+                console.log(
+                  "Document deleted from database:",
+                  uploadedFiles[type].name
+                );
+                showNotification(
+                  "success",
+                  "Dokumen Dihapus",
+                  "Dokumen berhasil dihapus dari database"
+                );
+              } else {
+                console.error("Failed to delete document from database");
+                showNotification(
+                  "error",
+                  "Gagal Menghapus",
+                  "Gagal menghapus dokumen dari database"
+                );
+              }
+            } catch (error) {
+              console.error("Error deleting document from database:", error);
+              showNotification(
+                "error",
+                "Kesalahan Koneksi",
+                "Gagal menghubungi server"
+              );
+            }
+          }
+        }
+
+        saveFormData("uploads", uploadedFiles);
+        checkAllFilesUploaded();
+      }
+
+      // Handle previous button
+      function handlePrevious() {
+        if (
+          confirm(
+            "Kembali ke Data Orang Tua? Dokumen yang diupload akan tetap tersimpan."
+          )
+        ) {
+          window.location.href = "formulir_pendaftaran_dataorangtua.html";
+        }
+      }
+
+      // Handle save draft
+      function handleSaveDraft() {
+        saveFormData("uploads", uploadedFiles);
+        alert("Draft berhasil disimpan!");
+      }
+
+      // Logout function
+      function handleLogout() {
+        showLogoutModal();
+      }
+
+      // Show logout confirmation modal
+      function showLogoutModal() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.add("show");
+      }
+
+      // Cancel logout
+      function cancelLogout() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.remove("show");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        performLogout();
+      }
+
+      function performLogout() {
+        // Clear session storage
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect to login page
+        window.location.href = "index.html";
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("DOMContentLoaded", function () {
+        const logoutOverlay = document.getElementById("logoutOverlay");
+        if (logoutOverlay) {
+          logoutOverlay.addEventListener("click", function (e) {
+            if (e.target === this) {
+              cancelLogout();
+            }
+          });
+        }
+      });
+
+      // Auto-logout functions
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function performLogout() {
+        if (confirm("Apakah Anda yakin ingin keluar?")) {
+          // Clear session storage
+          sessionStorage.removeItem("currentUser");
+          sessionStorage.removeItem("user");
+          sessionStorage.removeItem("resetEmail");
+          sessionStorage.removeItem("verificationToken");
+
+          // Redirect to login
+          window.location.href = "index.html";
+        }
+      }
+
+      // Supporting functions that need to be global
+      function checkAllFilesUploaded() {
+        console.log("=== CHECKING ALL FILES UPLOADED ===");
+        console.log("Current uploadedFiles:", uploadedFiles);
+
+        const allUploaded = Object.values(uploadedFiles).every(
+          (file) => file !== null
+        );
+
+        console.log("All files uploaded:", allUploaded);
+        console.log("File status:", {
+          ijazah: uploadedFiles.ijazah ? "✓" : "✗",
+          kartuKeluarga: uploadedFiles.kartuKeluarga ? "✓" : "✗",
+          aktaKelahiran: uploadedFiles.aktaKelahiran ? "✓" : "✗",
+          pasFoto: uploadedFiles.pasFoto ? "✓" : "✗",
+        });
+
+        const submitBtn = document.getElementById("submitBtn");
+
+        if (!allUploaded) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = "0.5";
+          submitBtn.style.cursor = "not-allowed";
+          console.log("Submit button disabled - not all files uploaded");
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+          submitBtn.style.cursor = "pointer";
+          console.log("Submit button enabled - all files uploaded");
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      }
+
+      function saveFormData(step, data) {
+        window.formDataStorage = window.formDataStorage || {};
+        window.formDataStorage[step] = data;
+        console.log("Data saved for step:", step, data);
+      }
+
+      function loadSavedData() {
+        // First load from local storage (session) - only if not already loaded from database
+        const savedData =
+          window.formDataStorage && window.formDataStorage["uploads"];
+        if (savedData) {
+          Object.keys(savedData).forEach((type) => {
+            // Only load if not already loaded from database
+            if (savedData[type] && !uploadedFiles[type]) {
+              uploadedFiles[type] = savedData[type];
+
+              // Update UI
+              const card = document.getElementById(`${type}Card`);
+              const info = document.getElementById(`${type}Info`);
+
+              if (card && info) {
+                card.classList.add("uploaded");
+                info.textContent = `✓ ${savedData[type].name} (${formatFileSize(
+                  savedData[type].size
+                )})`;
+                console.log(`Loaded saved data for ${type}`);
+              }
+            }
+          });
+          console.log("Calling checkAllFilesUploaded after loading saved data");
+          checkAllFilesUploaded();
+        }
+      }
+
+      // Flag to prevent multiple database calls
+      let isLoadingDocuments = false;
+
+      // Function to load documents from database
+      async function loadDocumentsFromDatabase() {
+        if (isLoadingDocuments) {
+          console.log("Already loading documents, skipping...");
+          return;
+        }
+
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          console.log("No current user found for loading documents");
+          return;
+        }
+
+        isLoadingDocuments = true;
+
+        try {
+          console.log("=== LOADING DOCUMENTS FROM DATABASE ===");
+          console.log("Current User ID:", currentUser.id);
+
+          const response = await fetch(
+            `${API_URL}/api/dokumen-user/${currentUser.id}`
+          );
+          console.log("API Response Status:", response.status);
+
+          const data = await response.json();
+          console.log("API Response Data:", data);
+
+          if (data.success && data.data && data.data.length > 0) {
+            console.log("Documents found in database:", data.data);
+
+            // Map backend data to frontend format
+            const documentMapping = {
+              "Ijazah/SKL": "ijazah",
+              "Kartu Keluarga": "kartuKeluarga",
+              "Akta Kelahiran": "aktaKelahiran",
+              "Pas Foto 3x4": "pasFoto",
+            };
+
+            data.data.forEach((doc) => {
+              console.log("Processing document:", doc);
+              const frontendType = documentMapping[doc.jenis_dokumen];
+              console.log(
+                "Mapped frontend type:",
+                frontendType,
+                "for:",
+                doc.jenis_dokumen
+              );
+
+              if (frontendType) {
+                uploadedFiles[frontendType] = {
+                  name: doc.nama_file,
+                  size: 0, // Size not stored in database
+                  type: `image/${doc.format_file}`,
+                  fromDatabase: true,
+                  path: doc.path_file,
+                  id: doc.id_dokumen,
+                };
+
+                console.log(
+                  `Updated uploadedFiles[${frontendType}]:`,
+                  uploadedFiles[frontendType]
+                );
+
+                // Update UI
+                const card = document.getElementById(`${frontendType}Card`);
+                const info = document.getElementById(`${frontendType}Info`);
+
+                console.log(`Card element for ${frontendType}:`, card);
+                console.log(`Info element for ${frontendType}:`, info);
+
+                if (card && info) {
+                  console.log(`Updating UI for ${frontendType}`);
+                  card.classList.add("uploaded");
+
+                  // Show database indicator
+                  info.innerHTML = `✓ ${doc.nama_file} <span style="color: #10b981; font-size: 10px;"></span>`;
+
+                  console.log(`UI updated for ${frontendType}`);
+                } else {
+                  console.log(
+                    `Card or Info element not found for ${frontendType}`
+                  );
+                }
+              } else {
+                console.log(
+                  `No mapping found for document type: ${doc.jenis_dokumen}`
+                );
+              }
+            });
+
+            console.log(
+              "Final uploadedFiles after database load:",
+              uploadedFiles
+            );
+            console.log(
+              "All files uploaded check:",
+              Object.values(uploadedFiles).every((f) => f !== null)
+            );
+            console.log("Calling checkAllFilesUploaded after database load");
+            checkAllFilesUploaded();
+          } else {
+            console.log(
+              "No documents found in database for user:",
+              currentUser.id
+            );
+            console.log("API Response:", data);
+            console.log(
+              "Calling checkAllFilesUploaded after no database documents"
+            );
+            checkAllFilesUploaded();
+          }
+        } catch (error) {
+          console.error("Error loading documents from database:", error);
+          console.log("Calling checkAllFilesUploaded after database error");
+          checkAllFilesUploaded();
+        } finally {
+          isLoadingDocuments = false;
+        }
+      }
+
+      function getAllFormData() {
+        return window.formDataStorage || {};
+      }
+
+      function clearAllFormData() {
+        window.formDataStorage = {};
+      }
+
+      // Notification and loading functions (need to be global too)
+      function showNotification(type, title, message) {
+        // Remove existing notification if any
+        const existingNotification = document.getElementById("notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.id = "notification";
+        notification.className = "notification " + type;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 20px;
+          border-radius: 8px;
+          color: white;
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 300px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        `;
+
+        // Set background color based on type
+        if (type === "success") {
+          notification.style.background = "#48bb78";
+        } else if (type === "error") {
+          notification.style.background = "#ef4444";
+        } else if (type === "info") {
+          notification.style.background = "#3182ce";
+        }
+
+        // Create icon
+        const icon = document.createElement("i");
+        if (type === "success") {
+          icon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          icon.className = "fas fa-exclamation-circle";
+        } else if (type === "info") {
+          icon.className = "fas fa-info-circle";
+        }
+
+        // Create content
+        const content = document.createElement("div");
+        content.innerHTML = `
+          <div style="font-weight: 600; font-size: 14px;">${title}</div>
+          <div style="font-size: 13px; opacity: 0.9;">${message}</div>
+        `;
+
+        notification.appendChild(icon);
+        notification.appendChild(content);
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        setTimeout(() => {
+          notification.style.transform = "translateX(0)";
+        }, 100);
+
+        // Hide after 5 seconds
+        setTimeout(() => {
+          notification.style.transform = "translateX(100%)";
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 5000);
+      }
+
+      function showLoading(show) {
+        // Remove existing loading if any
+        const existingLoading = document.getElementById("loadingOverlay");
+        if (existingLoading) {
+          existingLoading.remove();
+        }
+
+        if (show) {
+          // Create loading overlay
+          const loading = document.createElement("div");
+          loading.id = "loadingOverlay";
+          loading.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          `;
+
+          const loadingContent = document.createElement("div");
+          loadingContent.style.cssText = `
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+          `;
+
+          loadingContent.innerHTML = `
+            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: #3182ce; margin-bottom: 15px;"></i>
+            <p style="color: #3182ce; font-weight: 600; margin: 0;">Mengupload dokumen...</p>
+          `;
+
+          loading.appendChild(loadingContent);
+          document.body.appendChild(loading);
+        }
+      }
+
+      // ==================== KONFIGURASI AUTO-LOGOUT ====================
+      const IDLE_TIME = 1 * 60 * 1000; // 1 menit
+      const WARNING_TIME = 60; // 60 detik peringatan sebelum logout
+
+      let idleTimer = null;
+      let warningTimer = null;
+      let countdownInterval = null;
+      let countdownSeconds = 60;
+
+      // ==================== FUNGSI IDLE DETECTION ====================
+      function resetIdleTimer() {
+        // Clear existing timers
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        clearInterval(countdownInterval);
+
+        // Hide warning modal if showing
+        hideIdleWarning();
+
+        // Set new idle timer
+        idleTimer = setTimeout(() => {
+          showIdleWarning();
+        }, IDLE_TIME);
+      }
+
+      function showIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.add("show");
+
+        // Reset countdown
+        countdownSeconds = WARNING_TIME;
+        updateCountdownDisplay();
+
+        // Start countdown
+        countdownInterval = setInterval(() => {
+          countdownSeconds--;
+          updateCountdownDisplay();
+
+          if (countdownSeconds <= 0) {
+            autoLogout();
+          }
+        }, 1000);
+      }
+
+      function hideIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.remove("show");
+        clearInterval(countdownInterval);
+      }
+
+      function updateCountdownDisplay() {
+        const display = document.getElementById("countdownDisplay");
+        display.textContent = countdownSeconds;
+
+        // Change color based on urgency
+        if (countdownSeconds <= 10) {
+          display.style.color = "#ef4444";
+        } else if (countdownSeconds <= 30) {
+          display.style.color = "#f59e0b";
+        } else {
+          display.style.color = "#3182ce";
+        }
+      }
+
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function autoLogout() {
+        clearInterval(countdownInterval);
+        performAutoLogout();
+      }
+
+      function performAutoLogout() {
+        // Simpan informasi logout
+        const logoutInfo = {
+          reason: "idle_timeout",
+          timestamp: new Date().toISOString(),
+          lastPage: window.location.pathname,
+        };
+
+        console.log("Logout Info:", logoutInfo);
+
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect ke halaman login
+        alert(
+          "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+        );
+        window.location.href = "index.html";
+      }
+
+      // ==================== EVENT LISTENERS UNTUK AKTIVITAS ====================
+      const activityEvents = [
+        "mousedown",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart",
+        "click",
+      ];
+
+      // Add activity listeners
+      activityEvents.forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, true);
+      });
+
+      // ==================== PAGE VISIBILITY API ====================
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          // Reset timer when user comes back to the page
+          resetIdleTimer();
+        }
+      });
+
+      // Flag to prevent multiple initialization
+      let isInitialized = false;
+
+      // Initialize upload cards and progress
+      function initializeUploadCards() {
+        if (isInitialized) {
+          console.log("Already initialized, skipping...");
+          return;
+        }
+
+        console.log("=== INITIALIZING UPLOAD CARDS ===");
+        isInitialized = true;
+
+        // Set up all event listeners for file uploads
+        setupFileUploadListeners();
+        setupFormSubmission();
+      }
+
+      // Setup file upload listeners
+      function setupFileUploadListeners() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach((input) => {
+          // Remove existing listeners to prevent duplicates
+          input.removeEventListener("change", handleFileUploadChange);
+          input.addEventListener("change", handleFileUploadChange);
+        });
+      }
+
+      // Separate function for file upload change handler
+      function handleFileUploadChange(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        const type = this.id.replace("Input", "");
+        handleFileUpload(type, this);
+      }
+
+      // Setup form submission
+      function setupFormSubmission() {
+        const form = document.getElementById("uploadForm");
+        if (form) {
+          // Remove existing listeners to prevent duplicates
+          form.removeEventListener("submit", handleFormSubmitEvent);
+          form.addEventListener("submit", handleFormSubmitEvent);
+        }
+      }
+
+      // Separate function for form submit event handler
+      function handleFormSubmitEvent(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        handleFormSubmission();
+      }
+
+      // Handle form submission
+      function handleFormSubmission() {
+        console.log(`=== FORM SUBMISSION DEBUG ===`);
+        console.log(`Uploaded files:`, uploadedFiles);
+        console.log(
+          `All files uploaded?`,
+          Object.values(uploadedFiles).every((f) => f !== null)
+        );
+
+        // Check if all files are uploaded
+        const allUploaded = Object.values(uploadedFiles).every(
+          (file) => file !== null
+        );
+
+        if (!allUploaded) {
+          console.log("Not all files uploaded yet");
+          showNotification(
+            "error",
+            "File Tidak Lengkap",
+            "Mohon upload semua dokumen yang diperlukan!"
+          );
+          return;
+        }
+
+        // Get current user
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        console.log(`Current user:`, currentUser);
+
+        if (!currentUser) {
+          console.log("No current user found");
+          showNotification("error", "Sesi Berakhir", "Silakan login kembali");
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Check if all files are from database (already uploaded previously)
+        const allFilesFromDatabase = Object.values(uploadedFiles).every(
+          (file) => file && file.fromDatabase === true
+        );
+
+        console.log(`All files from database?`, allFilesFromDatabase);
+
+        if (allFilesFromDatabase) {
+          // All files already in database, no need to upload again
+          console.log(
+            "All files already in database, proceeding to next page..."
+          );
+          showNotification(
+            "success",
+            "Berhasil",
+            "Dokumen sudah tersimpan, melanjutkan ke halaman berikutnya..."
+          );
+          setTimeout(() => {
+            window.location.href = "formulir_pendaftaran_reviewandsubmit.html";
+          }, 1500);
+          return;
+        }
+
+        // Prepare FormData for backend upload
+        const formData = new FormData();
+        formData.append("userId", currentUser.id);
+
+        console.log(`=== FORM DATA DEBUG ===`);
+        console.log(`User ID: ${currentUser.id}`);
+
+        // Count total files and files from database
+        const totalFilesAvailable = Object.values(uploadedFiles).filter(
+          (f) => f !== null
+        ).length;
+        const filesFromDatabase = Object.values(uploadedFiles).filter(
+          (f) => f && f.fromDatabase
+        ).length;
+        const newFilesToUpload = totalFilesAvailable - filesFromDatabase;
+
+        console.log(`Total files ready: ${totalFilesAvailable}/4`);
+        console.log(`Files already in database: ${filesFromDatabase}`);
+        console.log(`New files to upload: ${newFilesToUpload}`);
+
+        // Map file names to backend expected names
+        // Only upload files that are NOT from database (i.e., newly uploaded files)
+        let hasNewFiles = false;
+
+        if (uploadedFiles.ijazah && !uploadedFiles.ijazah.fromDatabase) {
+          const input = document.getElementById("ijazahInput");
+          console.log(`Ijazah input files length: ${input.files.length}`);
+          if (input.files[0]) {
+            console.log(`Appending NEW ijazah file:`, input.files[0]);
+            formData.append("ijazah", input.files[0]);
+            hasNewFiles = true;
+          }
+        } else if (uploadedFiles.ijazah && uploadedFiles.ijazah.fromDatabase) {
+          console.log(`Ijazah already in database, skipping upload`);
+        }
+
+        if (
+          uploadedFiles.kartuKeluarga &&
+          !uploadedFiles.kartuKeluarga.fromDatabase
+        ) {
+          const input = document.getElementById("kartuKeluargaInput");
+          console.log(
+            `Kartu Keluarga input files length: ${input.files.length}`
+          );
+          if (input.files[0]) {
+            console.log(`Appending NEW kartuKeluarga file:`, input.files[0]);
+            formData.append("kartuKeluarga", input.files[0]);
+            hasNewFiles = true;
+          }
+        } else if (
+          uploadedFiles.kartuKeluarga &&
+          uploadedFiles.kartuKeluarga.fromDatabase
+        ) {
+          console.log(`Kartu Keluarga already in database, skipping upload`);
+        }
+
+        if (
+          uploadedFiles.aktaKelahiran &&
+          !uploadedFiles.aktaKelahiran.fromDatabase
+        ) {
+          const input = document.getElementById("aktaKelahiranInput");
+          console.log(
+            `Akta Kelahiran input files length: ${input.files.length}`
+          );
+          if (input.files[0]) {
+            console.log(`Appending NEW aktaKelahiran file:`, input.files[0]);
+            formData.append("aktaKelahiran", input.files[0]);
+            hasNewFiles = true;
+          }
+        } else if (
+          uploadedFiles.aktaKelahiran &&
+          uploadedFiles.aktaKelahiran.fromDatabase
+        ) {
+          console.log(`Akta Kelahiran already in database, skipping upload`);
+        }
+
+        if (uploadedFiles.pasFoto && !uploadedFiles.pasFoto.fromDatabase) {
+          const input = document.getElementById("pasFotoInput");
+          console.log(`Pas Foto input files length: ${input.files.length}`);
+          if (input.files[0]) {
+            console.log(`Appending NEW pasFoto file:`, input.files[0]);
+            formData.append("pasFoto", input.files[0]);
+            hasNewFiles = true;
+          }
+        } else if (
+          uploadedFiles.pasFoto &&
+          uploadedFiles.pasFoto.fromDatabase
+        ) {
+          console.log(`Pas Foto already in database, skipping upload`);
+        }
+
+        // Check if there are any new files to upload
+        if (!hasNewFiles) {
+          console.log("No new files to upload, all files already in database");
+          showNotification(
+            "info",
+            "Info",
+            "Semua dokumen sudah tersimpan sebelumnya"
+          );
+          setTimeout(() => {
+            window.location.href = "formulir_pendaftaran_reviewandsubmit.html";
+          }, 1500);
+          return;
+        }
+
+        // Log FormData contents
+        console.log(`Checking FormData entries...`);
+        let entryCount = 0;
+        for (let [key, value] of formData.entries()) {
+          entryCount++;
+          console.log(
+            `FormData entry ${entryCount}: ${key}:`,
+            value instanceof File
+              ? `File: ${value.name} (${value.size} bytes)`
+              : value
+          );
+        }
+        console.log(`Total FormData entries (files): ${entryCount - 1}`); // -1 for userId
+
+        // Show loading
+        showLoading(true);
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Mengupload...';
+
+        console.log(`=== FETCH REQUEST DEBUG ===`);
+        console.log(`API URL: ${API_URL}/api/upload`);
+        console.log(`Request method: POST`);
+        console.log(`Request body type:`, formData.constructor.name);
+
+        // Upload to backend
+        fetch(`${API_URL}/api/upload`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            console.log(`=== RESPONSE DEBUG ===`);
+            console.log(`Response status: ${response.status}`);
+            console.log(`Response ok: ${response.ok}`);
+            console.log(`Response headers:`, response.headers);
+
+            return response.json();
+          })
+          .then((data) => {
+            console.log(`=== RESPONSE DATA DEBUG ===`);
+            console.log(`Response data:`, data);
+
+            showLoading(false);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML =
+              'Selanjutnya <i class="fas fa-arrow-right"></i>';
+
+            if (data.success) {
+              console.log("Upload successful!");
+              console.log(`Backend response: ${data.message}`);
+              console.log(`Files uploaded to database:`, data.uploadedFiles);
+              showNotification("success", "Upload Berhasil", data.message);
+
+              // Save to storage
+              saveFormData("uploads", uploadedFiles);
+
+              // Move to next step after delay
+              setTimeout(() => {
+                console.log(
+                  "Moving to next step with uploaded files:",
+                  uploadedFiles
+                );
+                console.log("All form data:", getAllFormData());
+                window.location.href =
+                  "formulir_pendaftaran_reviewandsubmit.html";
+              }, 1500);
+            } else {
+              console.log("Upload failed:", data.message);
+              showNotification("error", "Upload Gagal", data.message);
+            }
+          })
+          .catch((error) => {
+            console.log(`=== FETCH ERROR DEBUG ===`);
+            console.log("Fetch error:", error);
+            console.log("Error type:", error.constructor.name);
+            console.log("Error message:", error.message);
+
+            showLoading(false);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML =
+              'Selanjutnya <i class="fas fa-arrow-right"></i>';
+
+            showNotification(
+              "error",
+              "Kesalahan Koneksi",
+              "Tidak dapat terhubung ke server. Pastikan server berjalan."
+            );
+          });
+      }
+
+      // Update progress
+      function updateProgress() {
+        // Progress bar is already set to 60% in CSS, no change needed
+      }
+
+      // Load saved data
+      // Update user interface with user data
+      function updateUserInterface(currentUser) {
+        if (currentUser) {
+          // Update profile section
+          const profileName = document.querySelector(".profile-name");
+          const profileEmail = document.querySelector(".profile-email");
+          const profileAvatar = document.querySelector(".profile-avatar");
+
+          if (profileName) {
+            profileName.textContent =
+              currentUser.nama_lengkap || currentUser.email || "User";
+          }
+
+          if (profileEmail) {
+            profileEmail.textContent = currentUser.email || "";
+          }
+
+          if (profileAvatar) {
+            const initials = (
+              currentUser.nama_lengkap ||
+              currentUser.email ||
+              "U"
+            )
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase())
+              .join("")
+              .substring(0, 2);
+            profileAvatar.textContent = initials;
+          }
+        }
+      }
+
+      // Check submission status
+      async function checkSubmissionStatus() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          return false;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/api/check-submission/${currentUser.id}`
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            return result.hasSubmitted || false;
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+        }
+
+        return false;
+      }
+
+      window.addEventListener("DOMContentLoaded", async function () {
+        console.log(`=== PAGE LOAD DEBUG ===`);
+
+        // Check if user is logged in
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        console.log(`Current user on page load:`, currentUser);
+
+        if (!currentUser) {
+          console.log("No user found in session storage");
+          showNotification("error", "Sesi Berakhir", "Silakan login kembali");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 2000);
+          return;
+        }
+
+        // Check if already submitted, redirect to review page
+        const hasSubmitted = await checkSubmissionStatus();
+        if (hasSubmitted) {
+          window.location.href = "formulir_pendaftaran_reviewandsubmit.html";
+          return;
+        }
+
+        console.log(`User ID: ${currentUser.id}`);
+        console.log(`User email: ${currentUser.email}`);
+
+        // Update user interface
+        updateUserInterface(currentUser);
+
+        // Load user data from database to get complete profile info
+        fetch(`${API_URL}/api/user-data/${currentUser.id}`)
+          .then((response) => response.json())
+          .then((result) => {
+            if (result.success && result.data && result.data.nama_lengkap) {
+              currentUser.nama_lengkap = result.data.nama_lengkap;
+              // Update session storage with complete data
+              sessionStorage.setItem(
+                "currentUser",
+                JSON.stringify(currentUser)
+              );
+              // Update UI with complete data
+              updateUserInterface(currentUser);
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading user data:", error);
+          });
+
+        // Initialize upload cards first
+        initializeUploadCards();
+        updateProgress();
+
+        // Load documents from database first
+        loadDocumentsFromDatabase().then(() => {
+          // Then load any local saved data (only if not from database)
+          loadSavedData();
+          checkAllFilesUploaded();
+        });
+
+        // Start idle timer immediately
+        resetIdleTimer();
+      });
+
+      // Menu navigation
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", function (e) {
+          if (this.getAttribute("href") !== "#") return;
+          e.preventDefault();
+          menuItems.forEach((m) => m.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // Animate progress on load
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          document.getElementById("progressFill").style.width = "60%";
+        }, 100);
+      });
+
+      // Close preview modal when clicking outside
+      document
+        .getElementById("previewOverlay")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            closePreview();
+          }
+        });
+
+      // Close preview modal with Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const overlay = document.getElementById("previewOverlay");
+          if (overlay.classList.contains("show")) {
+            closePreview();
+          }
+        }
+      });
+
+      // Drag and drop functionality
+      const uploadCards = document.querySelectorAll(".upload-card");
+
+      uploadCards.forEach((card) => {
+        card.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          this.style.borderColor = "#3182ce";
+          this.style.background = "#ebf8ff";
+        });
+
+        card.addEventListener("dragleave", function (e) {
+          e.preventDefault();
+          if (!this.classList.contains("uploaded")) {
+            this.style.borderColor = "#cbd5e0";
+            this.style.background = "#f7fafc";
+          }
+        });
+
+        card.addEventListener("drop", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const type = this.id.replace("Card", "");
+          const input = document.getElementById(`${type}Input`);
+          const files = e.dataTransfer.files;
+
+          if (files.length > 0) {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(files[0]);
+            input.files = dataTransfer.files;
+            handleFileUpload(type, input);
+          }
+
+          if (!this.classList.contains("uploaded")) {
+            this.style.borderColor = "#cbd5e0";
+            this.style.background = "#f7fafc";
+          }
+        });
+      });
+
+      // Prevent default drag behavior on document
+      document.addEventListener("dragover", function (e) {
+        e.preventDefault();
+      });
+
+      document.addEventListener("drop", function (e) {
+        e.preventDefault();
+      });
+    </script>
+  </body>
+</html>

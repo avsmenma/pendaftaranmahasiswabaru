@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review & Submit - Sistem Penerimaan Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style/reviewandsubmit.css" />
+    <style>
+      /* ==================== AUTO LOGOUT MODAL STYLES ==================== */
+      .idle-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .idle-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .idle-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .idle-overlay.show .idle-modal {
+        transform: scale(1);
+      }
+
+      .idle-icon {
+        width: 80px;
+        height: 80px;
+        background: #fef3c7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .idle-icon i {
+        font-size: 32px;
+        color: #f59e0b;
+      }
+
+      .idle-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .idle-modal p {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .countdown-display {
+        font-size: 48px;
+        font-weight: 700;
+        color: #3182ce;
+        margin-bottom: 32px;
+        font-family: "Inter", monospace;
+      }
+
+      .idle-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .btn-stay,
+      .btn-logout-now {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-stay {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-stay:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+
+      .btn-logout-now {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-logout-now:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+      }
+
+      @media (max-width: 480px) {
+        .idle-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .idle-buttons {
+          flex-direction: column;
+        }
+
+        .btn-stay,
+        .btn-logout-now {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Logout Confirmation Modal */
+      .logout-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .logout-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .logout-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .logout-overlay.show .logout-modal {
+        transform: scale(1);
+      }
+
+      .logout-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        animation: pulse-red 2s infinite;
+      }
+
+      .logout-icon i {
+        font-size: 32px;
+        color: white;
+      }
+
+      @keyframes pulse-red {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
+
+      .logout-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 12px;
+      }
+
+      .logout-modal p {
+        font-size: 16px;
+        color: #4a5568;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .logout-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn-cancel {
+        flex: 1;
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+      }
+
+      .btn-confirm-logout {
+        flex: 1;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-confirm-logout:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-cancel i,
+      .btn-confirm-logout i {
+        font-size: 16px;
+      }
+
+      @media (max-width: 480px) {
+        .logout-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .logout-icon {
+          width: 60px;
+          height: 60px;
+        }
+
+        .logout-icon i {
+          font-size: 24px;
+        }
+
+        .logout-modal h3 {
+          font-size: 20px;
+        }
+
+        .logout-buttons {
+          flex-direction: column;
+        }
+
+        .btn-cancel,
+        .btn-confirm-logout {
+          width: 100%;
+        }
+      }
+
+      /* Success Modal Styles */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .modal.show .modal-content {
+        transform: scale(1);
+      }
+
+      .modal-icon {
+        width: 80px;
+        height: 80px;
+        background: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .modal-icon i {
+        font-size: 32px;
+        color: white;
+      }
+
+      .modal-content h2 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .modal-content p {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .modal-btn {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .modal-btn:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+
+      /* Review Section Enhancements */
+      .review-header {
+        cursor: pointer;
+      }
+
+      .review-section .review-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease, padding 0.35s ease;
+        padding: 0 24px;
+      }
+
+      .review-section.expanded .review-content {
+        border-top: 1px solid #e2e8f0;
+      }
+    </style>
+  </head>
+  <script src="js/app.js"></script>
+  <script src="js/form-scripts.js"></script>
+  <body>
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="profile-section">
+          <div class="profile-avatar">P</div>
+          <div class="profile-name">Loading...</div>
+          <div class="profile-email">Loading...</div>
+        </div>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="menu-item active">
+            <i class="fas fa-file-alt"></i>
+            <span>Formulir Pendaftaran</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-bell"></i>
+            <span>Pengumuman</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+          </a>
+        </nav>
+
+        <div class="logout-section">
+          <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <h1>Formulir Pendaftaran</h1>
+          <div class="header-right">
+            <button class="notification-btn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Form Header -->
+          <div class="form-header-card">
+            <div>
+              <h2>Formulir Pendaftaran Mahasiswa Baru</h2>
+              <p>
+                Lengkapi semua informasi yang diperlukan untuk menyelesaikan
+                pendaftaran
+              </p>
+            </div>
+            <div class="step-badge">5 dari 5</div>
+          </div>
+
+          <!-- Steps -->
+          <div class="steps-container">
+            <div class="steps">
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Pribadi</div>
+                <div class="step-subtitle">Informasi Personal dan Kontak</div>
+              </div>
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Akademik</div>
+                <div class="step-subtitle">
+                  Informasi Pendidikan dan Jurusan
+                </div>
+              </div>
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Orang Tua</div>
+                <div class="step-subtitle">Informasi orang tua/wali</div>
+              </div>
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Upload Dokumen</div>
+                <div class="step-subtitle">Periksa dan kirim data</div>
+              </div>
+              <div class="step active">
+                <div class="step-icon">
+                  <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="step-title">Review & Submit</div>
+                <div class="step-subtitle">Upload berkas pendukung</div>
+              </div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-percentage">80%</div>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 80%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="form-card">
+            <!-- Success Content (Hidden by default) -->
+            <div
+              id="successContent"
+              style="
+                display: none;
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+              "
+            >
+              <!-- Content with Icon and Text Side by Side (Centered) -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 24px;
+                  margin-bottom: 32px;
+                "
+              >
+                <!-- Icon Badge Circle -->
+                <div style="flex-shrink: 0">
+                  <div
+                    style="
+                      width: 100px;
+                      height: 100px;
+                      background: #86efac;
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      box-shadow: 0 8px 24px rgba(134, 239, 172, 0.4);
+                    "
+                  >
+                    <i
+                      class="fas fa-check"
+                      style="font-size: 48px; color: white"
+                    ></i>
+                  </div>
+                </div>
+
+                <!-- Text Content -->
+                <div style="text-align: left">
+                  <h2
+                    style="
+                      font-size: 28px;
+                      font-weight: 700;
+                      color: #1f2937;
+                      margin: 0 0 8px 0;
+                    "
+                  >
+                    Data Telah Terkirim
+                  </h2>
+                  <p
+                    style="
+                      font-size: 15px;
+                      color: #6b7280;
+                      margin: 0;
+                      font-weight: 400;
+                    "
+                  >
+                    Silahkan Menunggu Informasi Selanjutnya
+                  </p>
+                </div>
+              </div>
+
+              <!-- Back Button (Bottom Left) -->
+              <div style="text-align: left">
+                <button
+                  onclick="handleKembali()"
+                  style="
+                    padding: 10px 24px;
+                    background: #f3f4f6;
+                    color: #4b5563;
+                    border: 1px solid #d1d5db;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                  onmouseover="this.style.background='#e5e7eb'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'"
+                  onmouseout="this.style.background='#f3f4f6'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                  kembali
+                </button>
+              </div>
+            </div>
+
+            <!-- Review Form Content -->
+            <div id="reviewFormContent">
+              <div class="form-section-header">
+                <i class="fas fa-clipboard-check"></i>
+                <div>
+                  <h3>Review & Submit</h3>
+                  <p>Periksa data & kirim data</p>
+                </div>
+              </div>
+
+              <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                  Review semua data sebelum mengirim. Pastikan semua informasi
+                  telah benar.
+                </div>
+              </div>
+
+              <form id="reviewForm">
+                <!-- Data Pribadi Section -->
+                <div
+                  class="review-section"
+                  id="pribadiSection"
+                  onclick="toggleSection('pribadi')"
+                >
+                  <div class="review-header">
+                    <div class="review-title">
+                      <i class="fas fa-check-circle"></i>
+                      <h4>Data Pribadi</h4>
+                    </div>
+                    <i class="fas fa-chevron-down review-expand"></i>
+                  </div>
+                  <div class="review-subtitle">
+                    Nama, NIK dan informasi lainnya
+                  </div>
+                  <div class="review-content">
+                    <div class="review-grid">
+                      <div class="review-item">
+                        <label>Nama Lengkap</label>
+                        <value id="namaPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>NIK</label>
+                        <value id="nikPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Tempat Lahir</label>
+                        <value id="tempatLahir">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Tanggal Lahir</label>
+                        <value id="tanggalLahir">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Jenis Kelamin</label>
+                        <value id="jenisKelamin">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Agama</label>
+                        <value id="agamaPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>No. HP</label>
+                        <value id="nohpPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Email</label>
+                        <value id="email">-</value>
+                      </div>
+                      <div class="review-item full-width">
+                        <label>Alamat</label>
+                        <value id="alamatPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Provinsi</label>
+                        <value id="provinsiPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Kabupaten/Kota</label>
+                        <value id="kabupatenPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Kecamatan</label>
+                        <value id="kecamatanPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Kelurahan</label>
+                        <value id="kelurahanPribadi">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Kode Pos</label>
+                        <value id="kodePosPribadi">-</value>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Data Akademik Section -->
+                <div
+                  class="review-section"
+                  id="akademikSection"
+                  onclick="toggleSection('akademik')"
+                >
+                  <div class="review-header">
+                    <div class="review-title">
+                      <i class="fas fa-check-circle"></i>
+                      <h4>Data Akademik</h4>
+                    </div>
+                    <i class="fas fa-chevron-down review-expand"></i>
+                  </div>
+                  <div class="review-subtitle">
+                    Fakultas, prodi, dan jalur masuk
+                  </div>
+                  <div class="review-content">
+                    <div class="review-grid">
+                      <div class="review-item">
+                        <label>Asal Sekolah</label>
+                        <value id="asalSekolah">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Nilai Rata-rata</label>
+                        <value id="nilaiRataRata">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Tahun Lulus</label>
+                        <value id="tahunLulus">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Jurusan Dipilih</label>
+                        <value id="jurusanDipilih">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Program Studi</label>
+                        <value id="prodiDipilih">-</value>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Data Orang Tua Section -->
+                <div
+                  class="review-section"
+                  id="orangTuaSection"
+                  onclick="toggleSection('orangTua')"
+                >
+                  <div class="review-header">
+                    <div class="review-title">
+                      <i class="fas fa-check-circle"></i>
+                      <h4>Data Orang Tua</h4>
+                    </div>
+                    <i class="fas fa-chevron-down review-expand"></i>
+                  </div>
+                  <div class="review-subtitle">
+                    Informasi orang tua dan wali
+                  </div>
+                  <div class="review-content">
+                    <div class="review-grid">
+                      <div class="review-item">
+                        <label>Nama Ayah</label>
+                        <value id="namaAyah">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Pekerjaan Ayah</label>
+                        <value id="pekerjaanAyah">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>No. HP Ayah</label>
+                        <value id="nohpAyah">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Penghasilan Ayah</label>
+                        <value id="penghasilanAyah">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Nama Ibu</label>
+                        <value id="namaIbu">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Pekerjaan Ibu</label>
+                        <value id="pekerjaanIbu">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>No. HP Ibu</label>
+                        <value id="nohpIbu">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Penghasilan Ibu</label>
+                        <value id="penghasilanIbu">-</value>
+                      </div>
+                      <div class="review-item full-width">
+                        <label>Alamat Ayah</label>
+                        <value id="alamatAyahReview">-</value>
+                      </div>
+                      <div class="review-item full-width">
+                        <label>Alamat Ibu</label>
+                        <value id="alamatIbuReview">-</value>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dokumen Section -->
+                <div
+                  class="review-section"
+                  id="dokumenSection"
+                  onclick="toggleSection('dokumen')"
+                >
+                  <div class="review-header">
+                    <div class="review-title">
+                      <i class="fas fa-check-circle"></i>
+                      <h4>Dokumen</h4>
+                    </div>
+                    <i class="fas fa-chevron-down review-expand"></i>
+                  </div>
+                  <div class="review-subtitle">4 dokumen telah di upload</div>
+                  <div class="review-content">
+                    <div class="review-grid">
+                      <div class="review-item">
+                        <label>Ijazah/SKL</label>
+                        <value id="ijazahFile">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Kartu Keluarga</label>
+                        <value id="kkFile">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Akta Kelahiran</label>
+                        <value id="aktaFile">-</value>
+                      </div>
+                      <div class="review-item">
+                        <label>Pas Foto 3x4</label>
+                        <value id="pasFotoFile">-</value>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="handlePrevious()"
+                  >
+                    <i class="fas fa-arrow-left"></i>
+                    Sebelumnya
+                  </button>
+                  <div style="display: flex; gap: 12px">
+                    <button
+                      type="button"
+                      class="btn btn-outline"
+                      onclick="handleSaveDraft()"
+                    >
+                      <i class="fas fa-save"></i>
+                      Simpan Draft
+                    </button>
+                    <button type="submit" class="btn btn-submit">
+                      Submit
+                      <i class="fas fa-paper-plane"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- End Review Form Content -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+      <div class="modal-content">
+        <div class="modal-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <h2>Data Telah Terkirim</h2>
+        <p>Silahkan Menunggu Informasi Selanjutnya</p>
+        <button class="modal-btn" onclick="goToDashboard()">Kembali</button>
+      </div>
+    </div>
+
+    <!-- Idle Warning Modal -->
+    <div class="idle-overlay" id="idleOverlay">
+      <div class="idle-modal">
+        <div class="idle-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Sesi Anda Hampir Berakhir</h3>
+        <p>
+          Anda tidak aktif selama beberapa waktu. Sesi Anda akan berakhir dalam:
+        </p>
+        <div class="countdown-display" id="countdownDisplay">60</div>
+        <div class="idle-buttons">
+          <button class="btn-stay" onclick="stayLoggedIn()">
+            <i class="fas fa-check"></i> Tetap Login
+          </button>
+          <button class="btn-logout-now" onclick="logoutNow()">
+            <i class="fas fa-sign-out-alt"></i> Logout Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-overlay" id="logoutOverlay">
+      <div class="logout-modal">
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3>Konfirmasi Logout</h3>
+        <p>
+          Apakah Anda yakin ingin keluar dari sistem? Semua data yang belum
+          disimpan akan hilang.
+        </p>
+        <div class="logout-buttons">
+          <button class="btn-cancel" onclick="cancelLogout()">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button class="btn-confirm-logout" onclick="confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Ya, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // API Configuration
+      const API_BASE_URL =
+        (window.app && window.app.API_URL) || "http://localhost:3000";
+
+      // ==================== KONFIGURASI AUTO-LOGOUT ====================
+      const IDLE_TIME = 1 * 60 * 1000; // 1 menit
+      const WARNING_TIME = 60; // 60 detik peringatan sebelum logout
+
+      let idleTimer = null;
+      let warningTimer = null;
+      let countdownInterval = null;
+      let countdownSeconds = 60;
+
+      // ==================== FUNGSI IDLE DETECTION ====================
+      function resetIdleTimer() {
+        // Clear existing timers
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        clearInterval(countdownInterval);
+
+        // Hide warning modal if showing
+        hideIdleWarning();
+
+        // Set new idle timer
+        idleTimer = setTimeout(() => {
+          showIdleWarning();
+        }, IDLE_TIME);
+      }
+
+      function showIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.add("show");
+
+        // Reset countdown
+        countdownSeconds = WARNING_TIME;
+        updateCountdownDisplay();
+
+        // Start countdown
+        countdownInterval = setInterval(() => {
+          countdownSeconds--;
+          updateCountdownDisplay();
+
+          if (countdownSeconds <= 0) {
+            autoLogout();
+          }
+        }, 1000);
+      }
+
+      function hideIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.remove("show");
+        clearInterval(countdownInterval);
+      }
+
+      function updateCountdownDisplay() {
+        const display = document.getElementById("countdownDisplay");
+        display.textContent = countdownSeconds;
+
+        // Change color based on urgency
+        if (countdownSeconds <= 10) {
+          display.style.color = "#ef4444";
+        } else if (countdownSeconds <= 30) {
+          display.style.color = "#f59e0b";
+        } else {
+          display.style.color = "#3182ce";
+        }
+      }
+
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function autoLogout() {
+        clearInterval(countdownInterval);
+        performAutoLogout();
+      }
+
+      function performAutoLogout() {
+        // Simpan informasi logout
+        const logoutInfo = {
+          reason: "idle_timeout",
+          timestamp: new Date().toISOString(),
+          lastPage: window.location.pathname,
+        };
+
+        console.log("Logout Info:", logoutInfo);
+
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect ke halaman login
+        alert(
+          "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+        );
+        window.location.href = "index.html";
+      }
+
+      // ==================== EVENT LISTENERS UNTUK AKTIVITAS ====================
+      const activityEvents = [
+        "mousedown",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart",
+        "click",
+      ];
+
+      // Add activity listeners
+      activityEvents.forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, true);
+      });
+
+      // ==================== PAGE VISIBILITY API ====================
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          // Reset timer when user comes back to the page
+          resetIdleTimer();
+        }
+      });
+
+      // Check if user has already submitted
+      async function checkSubmissionStatus() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          console.log("No current user found");
+          return false;
+        }
+
+        console.log("=== CHECK SUBMISSION STATUS (FRONTEND) ===");
+        console.log("Checking submission for user ID:", currentUser.id);
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/check-submission/${currentUser.id}`
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Submission check result:", result);
+            console.log("Has submitted:", result.hasSubmitted);
+            if (result.submissionDate) {
+              console.log("Submission date:", result.submissionDate);
+            }
+            return result.hasSubmitted || false;
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+        }
+
+        return false;
+      }
+
+      // Load all saved data
+      window.addEventListener("DOMContentLoaded", async function () {
+        // Get current user
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+
+        if (!currentUser) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Load user data from database first to get complete info
+        try {
+          const userResponse = await fetch(
+            `${API_BASE_URL}/api/user-data/${currentUser.id}`
+          );
+          if (userResponse.ok) {
+            const userResult = await userResponse.json();
+            if (userResult.success && userResult.data) {
+              // Update currentUser with database data
+              if (userResult.data.nama_lengkap) {
+                currentUser.nama_lengkap = userResult.data.nama_lengkap;
+              }
+              // Update session storage
+              sessionStorage.setItem(
+                "currentUser",
+                JSON.stringify(currentUser)
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+        }
+
+        // Update user interface
+        updateUserInterface(currentUser);
+
+        // Check if already submitted
+        const hasSubmitted = await checkSubmissionStatus();
+
+        if (hasSubmitted) {
+          // User has already submitted, show success page directly
+          console.log("User has already submitted, showing success page");
+
+          // Update progress to 100%
+          document.getElementById("progressFill").style.width = "100%";
+          document.querySelector(".progress-percentage").textContent = "100%";
+
+          // Update all steps to completed
+          const allSteps = document.querySelectorAll(".step");
+          allSteps.forEach((step) => {
+            step.classList.remove("active");
+            step.classList.add("completed");
+            const icon = step.querySelector(".step-icon");
+            if (icon) {
+              icon.innerHTML = '<i class="fas fa-check"></i>';
+            }
+          });
+
+          // Show success content, hide review form
+          document.getElementById("reviewFormContent").style.display = "none";
+          document.getElementById("successContent").style.display = "block";
+        } else {
+          // User hasn't submitted yet, load normal review page
+          loadAllData();
+        }
+
+        // Start idle timer immediately
+        resetIdleTimer();
+      });
+
+      // Menu navigation
+      const menuItems = document.querySelectorAll(".menu-item");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", function (e) {
+          if (this.getAttribute("href") !== "#") return;
+          e.preventDefault();
+          menuItems.forEach((m) => m.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+
+      // Toggle section expand/collapse
+      function toggleSection(sectionName) {
+        const section = document.getElementById(`${sectionName}Section`);
+        section.classList.toggle("expanded");
+      }
+
+      // Format date to DD-MM-YYYY
+      function formatDate(dateString) {
+        if (!dateString) return "-";
+
+        try {
+          // Handle ISO date format (with time) or date-only format
+          const date = new Date(dateString);
+
+          // Check if date is valid
+          if (isNaN(date.getTime())) return dateString;
+
+          // Format: DD-MM-YYYY
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const year = date.getFullYear();
+
+          return `${day}-${month}-${year}`;
+        } catch (error) {
+          console.error("Error formatting date:", error);
+          return dateString;
+        }
+      }
+
+      // Update user interface with user data
+      function updateUserInterface(currentUser) {
+        if (currentUser) {
+          // Update profile section
+          const profileName = document.querySelector(".profile-name");
+          const profileEmail = document.querySelector(".profile-email");
+          const profileAvatar = document.querySelector(".profile-avatar");
+
+          if (profileName) {
+            profileName.textContent =
+              currentUser.nama_lengkap || currentUser.email || "User";
+          }
+
+          if (profileEmail) {
+            profileEmail.textContent = currentUser.email || "";
+          }
+
+          if (profileAvatar) {
+            const initials = (
+              currentUser.nama_lengkap ||
+              currentUser.email ||
+              "U"
+            )
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase())
+              .join("")
+              .substring(0, 2);
+            profileAvatar.textContent = initials;
+          }
+        }
+      }
+
+      // Load all form data from database
+      async function loadAllData() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          console.log("No current user found");
+          return;
+        }
+
+        // Update user interface
+        updateUserInterface(currentUser);
+
+        const fallbackData =
+          (window.app &&
+            typeof window.app.getAllFormData === "function" &&
+            window.app.getAllFormData()) ||
+          window.formDataStorage ||
+          {};
+
+        let loadedSections = {
+          pribadi: false,
+          akademik: false,
+          orangTua: false,
+          uploads: false,
+        };
+
+        const setPribadi = (data) => {
+          if (!data) return;
+          const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value || "-";
+          };
+
+          setText("namaPribadi", data.nama_lengkap || data.namaLengkap);
+          setText("nikPribadi", data.nik);
+          setText("tempatLahir", data.tempat_lahir || data.tempatLahir);
+          setText(
+            "tanggalLahir",
+            formatDate(data.tanggal_lahir || data.tanggalLahir)
+          );
+          setText("jenisKelamin", data.jenis_kelamin || data.jenisKelamin);
+          setText("agamaPribadi", data.agama);
+          setText("nohpPribadi", data.no_hp || data.noHP);
+          setText("email", data.email);
+          setText(
+            "alamatPribadi",
+            data.alamat_mahasiswa || data.alamat || data.alamat_rumah
+          );
+          setText(
+            "provinsiPribadi",
+            data.nama_provinsi || data.provinsi || data.id_provinsi
+          );
+          setText(
+            "kabupatenPribadi",
+            data.nama_kabupaten ||
+              data.kabupaten_kota ||
+              data.id_kabupaten ||
+              data.kabupatenKota
+          );
+          setText(
+            "kecamatanPribadi",
+            data.nama_kecamatan || data.kecamatan || data.id_kecamatan
+          );
+          setText(
+            "kelurahanPribadi",
+            data.nama_kelurahan || data.kelurahan || data.id_kelurahan
+          );
+          setText("kodePosPribadi", data.kode_pos || data.kodePos);
+
+          loadedSections.pribadi = true;
+        };
+
+        const setAkademik = (data) => {
+          if (!data) return;
+          const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value || "-";
+          };
+
+          setText("asalSekolah", data.asal_sekolah || data.asalSekolah);
+          setText("nilaiRataRata", data.nilai_rata_rata || data.nilaiRataRata);
+          setText("tahunLulus", data.tahun_lulus || data.tahunLulus);
+          setText(
+            "jurusanDipilih",
+            data.nama_jurusan || data.jurusanDipilih || data.id_jurusan
+          );
+          setText(
+            "prodiDipilih",
+            data.nama_prodi || data.prodiDipilih || data.id_prodi
+          );
+          loadedSections.akademik = true;
+        };
+
+        const setOrangTua = (data) => {
+          if (!data) return;
+          const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value || "-";
+          };
+
+          setText("namaAyah", data.nama_ayah || data.namaAyah);
+          setText("pekerjaanAyah", data.pekerjaan_ayah || data.pekerjaanAyah);
+          setText("nohpAyah", data.nohp_ayah || data.noTeleponAyah);
+          setText(
+            "penghasilanAyah",
+            data.penghasilan_ayah || data.penghasilanAyah
+          );
+          setText("namaIbu", data.nama_ibu || data.namaIbu);
+          setText("pekerjaanIbu", data.pekerjaan_ibu || data.pekerjaanIbu);
+          setText("nohpIbu", data.nohp_ibu || data.noTeleponIbu);
+          setText(
+            "penghasilanIbu",
+            data.penghasilan_ibu || data.penghasilanIbu
+          );
+          setText(
+            "penghasilanOrtu",
+            data.penghasilan_orangtua || data.penghasilanOrtu
+          );
+          setText(
+            "jumlahTanggungan",
+            data.jumlah_tanggungan || data.tanggungan || data.jumlahTanggungan
+          );
+          setText("alamatAyahReview", data.alamat_ayah || data.alamatAyah);
+          setText("alamatIbuReview", data.alamat_ibu || data.alamatIbu);
+          loadedSections.orangTua = true;
+        };
+
+        const setUploads = (uploads) => {
+          if (!uploads) return;
+          document.getElementById("ijazahFile").textContent = uploads.ijazah
+            ? `✓ ${uploads.ijazah.nama_file || uploads.ijazah.name}`
+            : "-";
+          document.getElementById("kkFile").textContent = uploads.kk
+            ? `✓ ${uploads.kk.nama_file || uploads.kk.name}`
+            : "-";
+          document.getElementById("aktaFile").textContent = uploads.akta
+            ? `✓ ${uploads.akta.nama_file || uploads.akta.name}`
+            : "-";
+          document.getElementById("pasFotoFile").textContent = uploads.pasFoto
+            ? `✓ ${uploads.pasFoto.nama_file || uploads.pasFoto.name}`
+            : "-";
+          loadedSections.uploads = true;
+        };
+
+        try {
+          // Load user data (data pribadi)
+          const userResponse = await fetch(
+            `${API_BASE_URL}/api/user-data/${currentUser.id}`
+          );
+          if (userResponse.ok) {
+            const userResult = await userResponse.json();
+            if (userResult.success && userResult.data) {
+              setPribadi(userResult.data);
+              // Update profile with latest data from database
+              if (userResult.data.nama_lengkap) {
+                currentUser.nama_lengkap = userResult.data.nama_lengkap;
+                updateUserInterface(currentUser);
+              }
+            }
+          }
+
+          // Load akademik data
+          const akademikResponse = await fetch(
+            `${API_BASE_URL}/api/akademik-data/${currentUser.id}`
+          );
+          if (akademikResponse.ok) {
+            const akademikResult = await akademikResponse.json();
+            if (akademikResult.success && akademikResult.data) {
+              setAkademik(akademikResult.data);
+            }
+          }
+
+          // Load orang tua data
+          const orangTuaResponse = await fetch(
+            `${API_BASE_URL}/api/orang-tua-data/${currentUser.id}`
+          );
+          if (orangTuaResponse.ok) {
+            const orangTuaResult = await orangTuaResponse.json();
+            if (orangTuaResult.success && orangTuaResult.data) {
+              setOrangTua(orangTuaResult.data);
+            }
+          }
+
+          // Load dokumen data
+          const dokumenResponse = await fetch(
+            `${API_BASE_URL}/api/dokumen-user/${currentUser.id}`
+          );
+          if (dokumenResponse.ok) {
+            const dokumenResult = await dokumenResponse.json();
+            if (dokumenResult.success && dokumenResult.data) {
+              const dokumenData = dokumenResult.data;
+
+              // Map dokumen by jenis
+              const dokumenMap = {};
+              dokumenData.forEach((doc) => {
+                dokumenMap[doc.jenis_dokumen] = doc;
+              });
+
+              // Load Dokumen
+              setUploads({
+                ijazah: dokumenMap["Ijazah/SKL"],
+                kk: dokumenMap["Kartu Keluarga"],
+                akta: dokumenMap["Akta Kelahiran"],
+                pasFoto: dokumenMap["Pas Foto 3x4"],
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error loading data:", error);
+          showNotification(
+            "error",
+            "Error",
+            "Gagal memuat data. Silakan refresh halaman."
+          );
+        }
+
+        if (!loadedSections.pribadi && fallbackData.pribadi) {
+          setPribadi(fallbackData.pribadi);
+        }
+        if (!loadedSections.akademik && fallbackData.akademik) {
+          setAkademik(fallbackData.akademik);
+        }
+        if (!loadedSections.orangTua && fallbackData.orangTua) {
+          setOrangTua(fallbackData.orangTua);
+        }
+        if (!loadedSections.uploads && fallbackData.uploads) {
+          setUploads(fallbackData.uploads);
+        }
+      }
+
+      // Helper function to get jurusan name
+      async function getJurusanName(jurusanId) {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/api/jurusan/${jurusanId}`
+          );
+          if (response.ok) {
+            const result = await response.json();
+            return result.data
+              ? result.data.nama_jurusan || result.data.nama || result.data
+              : null;
+          }
+        } catch (error) {
+          console.error("Error getting jurusan name:", error);
+        }
+        return null;
+      }
+
+      // Helper function to get prodi name
+      async function getProdiName(prodiId) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/prodi/${prodiId}`);
+          if (response.ok) {
+            const result = await response.json();
+            return result.data
+              ? result.data.nama_prodi || result.data.nama || result.data
+              : null;
+          }
+        } catch (error) {
+          console.error("Error getting prodi name:", error);
+        }
+        return null;
+      }
+
+      // Form submission
+      document
+        .getElementById("reviewForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+          if (!currentUser) {
+            showNotification(
+              "error",
+              "Error",
+              "Sesi berakhir. Silakan login kembali."
+            );
+            return;
+          }
+
+          // Show loading state
+          const submitBtn = document.querySelector(".btn-submit");
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+          submitBtn.disabled = true;
+
+          try {
+            // Submit final application
+            const response = await fetch(
+              `${API_BASE_URL}/api/submit-application`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  userId: currentUser.id,
+                }),
+              }
+            );
+
+            const result = await response.json();
+
+            // Reset button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            if (result.success) {
+              // Update progress to 100%
+              document.getElementById("progressFill").style.width = "100%";
+              document.querySelector(".progress-percentage").textContent =
+                "100%";
+
+              // Update all steps to completed
+              const allSteps = document.querySelectorAll(".step");
+              allSteps.forEach((step) => {
+                step.classList.remove("active");
+                step.classList.add("completed");
+                const icon = step.querySelector(".step-icon");
+                if (icon) {
+                  icon.innerHTML = '<i class="fas fa-check"></i>';
+                }
+              });
+
+              console.log("Application submitted successfully!");
+
+              // Hide review form and show success content
+              setTimeout(() => {
+                document.getElementById("reviewFormContent").style.display =
+                  "none";
+                document.getElementById("successContent").style.display =
+                  "block";
+
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: "smooth" });
+
+                // Redirect to dashboard after 3 seconds
+                setTimeout(() => {
+                  window.location.href = "dashboard.html";
+                }, 3000);
+              }, 500);
+            } else {
+              showNotification(
+                "error",
+                "Error",
+                result.message || "Gagal mengirim pendaftaran"
+              );
+            }
+          } catch (error) {
+            // Reset button
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+
+            console.error("Error submitting application:", error);
+            showNotification(
+              "error",
+              "Error",
+              "Terjadi kesalahan saat mengirim data"
+            );
+          }
+        });
+
+      // Handle previous button
+      function handlePrevious() {
+        window.location.href = "formulir_pendaftaran_uploaddokumen.html";
+      }
+
+      // Handle save draft
+      function handleSaveDraft() {
+        showNotification("success", "Berhasil", "Draft berhasil disimpan!");
+      }
+
+      // Logout function
+      function handleLogout() {
+        showLogoutModal();
+      }
+
+      // Show logout confirmation modal
+      function showLogoutModal() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.add("show");
+      }
+
+      // Cancel logout
+      function cancelLogout() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.remove("show");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        performLogout();
+      }
+
+      function performLogout() {
+        // Clear session storage
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect to login page
+        window.location.href = "index.html";
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("DOMContentLoaded", function () {
+        const logoutOverlay = document.getElementById("logoutOverlay");
+        if (logoutOverlay) {
+          logoutOverlay.addEventListener("click", function (e) {
+            if (e.target === this) {
+              cancelLogout();
+            }
+          });
+        }
+      });
+
+      // Go to dashboard after successful submission
+      function goToDashboard() {
+        // Clear form data but keep user session
+        clearAllFormData();
+        // Redirect to dashboard
+        window.location.href = "dashboard.html";
+      }
+
+      // Handle kembali button from success page
+      function handleKembali() {
+        // Clear form data but keep user session
+        clearAllFormData();
+        // Redirect to dashboard
+        window.location.href = "dashboard.html";
+      }
+
+      // Storage functions
+      window.formDataStorage = window.formDataStorage || {};
+
+      function saveFormData(step, data) {
+        window.formDataStorage[step] = data;
+        console.log("Data saved for step:", step, data);
+      }
+
+      function getAllFormData() {
+        return window.formDataStorage;
+      }
+
+      function clearAllFormData() {
+        window.formDataStorage = {};
+      }
+
+      // Animate progress on load
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          document.getElementById("progressFill").style.width = "80%";
+        }, 100);
+      });
+
+      // Auto-expand first section on load
+      setTimeout(() => {
+        document.getElementById("pribadiSection").classList.add("expanded");
+      }, 500);
+
+      // Close modal when clicking outside
+      document
+        .getElementById("successModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) {
+            this.classList.remove("show");
+          }
+        });
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        // Press 'S' to save draft
+        if (e.key === "s" && e.ctrlKey) {
+          e.preventDefault();
+          handleSaveDraft();
+        }
+
+        // Press 'Enter' to submit (when focused on submit button)
+        if (e.key === "Enter" && e.target.classList.contains("btn-submit")) {
+          e.preventDefault();
+          document
+            .getElementById("reviewForm")
+            .dispatchEvent(new Event("submit"));
+        }
+      });
+
+      // Print functionality (optional)
+      function printReview() {
+        window.print();
+      }
+
+      // Expand all sections
+      function expandAll() {
+        document.querySelectorAll(".review-section").forEach((section) => {
+          section.classList.add("expanded");
+        });
+      }
+
+      // Collapse all sections
+      function collapseAll() {
+        document.querySelectorAll(".review-section").forEach((section) => {
+          section.classList.remove("expanded");
+        });
+      }
+
+      // Show notification function
+      function showNotification(type, title, message) {
+        // Remove existing notification if any
+        const existingNotification = document.getElementById("notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.id = "notification";
+        notification.className = "notification " + type;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 20px;
+          border-radius: 8px;
+          color: white;
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 300px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        `;
+
+        // Set background color based on type
+        if (type === "success") {
+          notification.style.background = "#48bb78";
+        } else if (type === "error") {
+          notification.style.background = "#ef4444";
+        } else if (type === "info") {
+          notification.style.background = "#3182ce";
+        }
+
+        // Create icon
+        const icon = document.createElement("i");
+        if (type === "success") {
+          icon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          icon.className = "fas fa-exclamation-circle";
+        } else if (type === "info") {
+          icon.className = "fas fa-info-circle";
+        }
+
+        // Create content
+        const content = document.createElement("div");
+        content.innerHTML = `
+          <div style="font-weight: 600; font-size: 14px;">${title}</div>
+          <div style="font-size: 13px; opacity: 0.9;">${message}</div>
+        `;
+
+        notification.appendChild(icon);
+        notification.appendChild(content);
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        setTimeout(() => {
+          notification.style.transform = "translateX(0)";
+        }, 100);
+
+        // Hide after 5 seconds
+        setTimeout(() => {
+          notification.style.transform = "translateX(100%)";
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

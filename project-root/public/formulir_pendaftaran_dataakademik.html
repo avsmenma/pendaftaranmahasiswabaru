@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Akademik - Sistem Penerimaan Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style/dataakademik.css" />
+    <style>
+      /* ==================== AUTO LOGOUT MODAL STYLES ==================== */
+      .idle-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .idle-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .idle-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .idle-overlay.show .idle-modal {
+        transform: scale(1);
+      }
+
+      .idle-icon {
+        width: 80px;
+        height: 80px;
+        background: #fef3c7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .idle-icon i {
+        font-size: 32px;
+        color: #f59e0b;
+      }
+
+      .idle-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .idle-modal p {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .countdown-display {
+        font-size: 48px;
+        font-weight: 700;
+        color: #3182ce;
+        margin-bottom: 32px;
+        font-family: "Inter", monospace;
+      }
+
+      .idle-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .btn-stay,
+      .btn-logout-now {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-stay {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-stay:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+
+      .btn-logout-now {
+        background: #ef4444;
+        color: white;
+      }
+
+      .btn-logout-now:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+      }
+
+      @media (max-width: 480px) {
+        .idle-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .idle-buttons {
+          flex-direction: column;
+        }
+
+        .btn-stay,
+        .btn-logout-now {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Logout Confirmation Modal */
+      .logout-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .logout-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .logout-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      .logout-overlay.show .logout-modal {
+        transform: scale(1);
+      }
+
+      .logout-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        animation: pulse-red 2s infinite;
+      }
+
+      .logout-icon i {
+        font-size: 32px;
+        color: white;
+      }
+
+      @keyframes pulse-red {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
+
+      .logout-modal h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 12px;
+      }
+
+      .logout-modal p {
+        font-size: 16px;
+        color: #4a5568;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+
+      .logout-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn-cancel {
+        flex: 1;
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-cancel:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+      }
+
+      .btn-confirm-logout {
+        flex: 1;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .btn-confirm-logout:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-cancel i,
+      .btn-confirm-logout i {
+        font-size: 16px;
+      }
+
+      @media (max-width: 480px) {
+        .logout-modal {
+          padding: 24px;
+          margin: 20px;
+        }
+
+        .logout-icon {
+          width: 60px;
+          height: 60px;
+        }
+
+        .logout-icon i {
+          font-size: 24px;
+        }
+
+        .logout-modal h3 {
+          font-size: 20px;
+        }
+
+        .logout-buttons {
+          flex-direction: column;
+        }
+
+        .btn-cancel,
+        .btn-confirm-logout {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="profile-section">
+          <div class="profile-avatar">P</div>
+          <div class="profile-name">Loading...</div>
+          <div class="profile-email">Loading...</div>
+        </div>
+
+        <nav class="menu">
+          <a href="dashboard.html" class="menu-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="menu-item active">
+            <i class="fas fa-file-alt"></i>
+            <span>Formulir Pendaftaran</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-bell"></i>
+            <span>Pengumuman</span>
+          </a>
+          <a href="#" class="menu-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+          </a>
+        </nav>
+
+        <div class="logout-section">
+          <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <h1>Formulir Pendaftaran</h1>
+          <div class="header-right">
+            <button class="notification-btn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Form Header -->
+          <div class="form-header-card">
+            <div>
+              <h2>Formulir Pendaftaran Mahasiswa Baru</h2>
+              <p>
+                Lengkapi semua informasi yang diperlukan untuk menyelesaikan
+                pendaftaran
+              </p>
+            </div>
+            <div class="step-badge">2 dari 5</div>
+          </div>
+
+          <!-- Steps -->
+          <div class="steps-container">
+            <div class="steps">
+              <div class="step completed">
+                <div class="step-icon">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="step-title">Data Pribadi</div>
+                <div class="step-subtitle">Informasi Personal dan Kontak</div>
+              </div>
+              <div class="step active">
+                <div class="step-icon">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="step-title">Data Akademik</div>
+                <div class="step-subtitle">
+                  Informasi Pendidikan dan Jurusan
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="step-title">Data Orang Tua</div>
+                <div class="step-subtitle">Informasi orang tua/wali</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="step-title">Upload Dokumen</div>
+                <div class="step-subtitle">Berkas dan Ijazah/SKHUN</div>
+              </div>
+              <div class="step">
+                <div class="step-icon">
+                  <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="step-title">Review & Submit</div>
+                <div class="step-subtitle">Upload berkas pendukung</div>
+              </div>
+            </div>
+
+            <div class="progress-bar-container">
+              <div class="progress-percentage">20%</div>
+            </div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 20%"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="form-card">
+            <div class="form-section-header">
+              <i class="fas fa-graduation-cap"></i>
+              <div>
+                <h3>Data Akademik</h3>
+                <p>Informasi pendidikan dan jurusan</p>
+              </div>
+            </div>
+
+            <div class="info-banner">
+              <i class="fas fa-info-circle"></i>
+              Silakan lengkapi data akademik Anda untuk melanjutkan proses
+              pendaftaran
+            </div>
+
+            <form id="akademikForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="asalSekolah">Asal Sekolah</label>
+                  <input
+                    type="text"
+                    id="asalSekolah"
+                    class="form-control"
+                    placeholder="Masukkan Asal Sekolah"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="nilaiRataRata">Nilai Rata-rata</label>
+                  <input
+                    type="number"
+                    id="nilaiRataRata"
+                    class="form-control"
+                    placeholder="Contoh: 85.5"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="tahunLulus">Tahun Lulus</label>
+                  <input
+                    type="number"
+                    id="tahunLulus"
+                    class="form-control"
+                    placeholder="Contoh: 2024"
+                    min="1990"
+                    max="2030"
+                    required
+                  />
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="jurusanDipilih">Jurusan Yang Dipilih</label>
+                  <select
+                    id="jurusanDipilih"
+                    class="form-control"
+                    required
+                    onchange="loadProdiByJurusan()"
+                  >
+                    <option value="">Pilih Jurusan</option>
+                    <option value="1">Teknik Sipil</option>
+                    <option value="2">Teknik Mesin</option>
+                    <option value="3">Teknik Elektro</option>
+                    <option value="4">Administrasi Bisnis</option>
+                    <option value="5">Akuntansi</option>
+                    <option value="6">Teknologi Pertanian</option>
+                    <option value="7">Ilmu Kelautan dan Perikanan</option>
+                    <option value="8">Teknik Arsitektur</option>
+                  </select>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="prodiDipilih">Program Studi Yang Dipilih</label>
+                  <select id="prodiDipilih" class="form-control" required>
+                    <option value="">Pilih Program Studi</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="handlePrevious()"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                  Sebelumnya
+                </button>
+                <div style="display: flex; gap: 12px">
+                  <button
+                    type="button"
+                    class="btn btn-outline"
+                    onclick="handleSaveDraft()"
+                  >
+                    <i class="fas fa-save"></i>
+                    Simpan Draft
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Selanjutnya
+                    <i class="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Idle Warning Modal -->
+    <div class="idle-overlay" id="idleOverlay">
+      <div class="idle-modal">
+        <div class="idle-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Sesi Anda Hampir Berakhir</h3>
+        <p>
+          Anda tidak aktif selama beberapa waktu. Sesi Anda akan berakhir dalam:
+        </p>
+        <div class="countdown-display" id="countdownDisplay">60</div>
+        <div class="idle-buttons">
+          <button class="btn-stay" onclick="stayLoggedIn()">
+            <i class="fas fa-check"></i> Tetap Login
+          </button>
+          <button class="btn-logout-now" onclick="logoutNow()">
+            <i class="fas fa-sign-out-alt"></i> Logout Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-overlay" id="logoutOverlay">
+      <div class="logout-modal">
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3>Konfirmasi Logout</h3>
+        <p>
+          Apakah Anda yakin ingin keluar dari sistem? Semua data yang belum
+          disimpan akan hilang.
+        </p>
+        <div class="logout-buttons">
+          <button class="btn-cancel" onclick="cancelLogout()">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button class="btn-confirm-logout" onclick="confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Ya, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = window.location.protocol + "//" + window.location.host;
+      let currentUser = null;
+
+      // ==================== KONFIGURASI AUTO-LOGOUT ====================
+      const IDLE_TIME = 1 * 60 * 1000; // 1 menit
+      const WARNING_TIME = 60; // 60 detik peringatan sebelum logout
+
+      let idleTimer = null;
+      let warningTimer = null;
+      let countdownInterval = null;
+      let countdownSeconds = 60;
+
+      // ==================== FUNGSI IDLE DETECTION ====================
+      function resetIdleTimer() {
+        // Clear existing timers
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        clearInterval(countdownInterval);
+
+        // Hide warning modal if showing
+        hideIdleWarning();
+
+        // Set new idle timer
+        idleTimer = setTimeout(() => {
+          showIdleWarning();
+        }, IDLE_TIME);
+      }
+
+      function showIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.add("show");
+
+        // Reset countdown
+        countdownSeconds = WARNING_TIME;
+        updateCountdownDisplay();
+
+        // Start countdown
+        countdownInterval = setInterval(() => {
+          countdownSeconds--;
+          updateCountdownDisplay();
+
+          if (countdownSeconds <= 0) {
+            autoLogout();
+          }
+        }, 1000);
+      }
+
+      function hideIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.remove("show");
+        clearInterval(countdownInterval);
+      }
+
+      function updateCountdownDisplay() {
+        const display = document.getElementById("countdownDisplay");
+        display.textContent = countdownSeconds;
+
+        // Change color based on urgency
+        if (countdownSeconds <= 10) {
+          display.style.color = "#ef4444";
+        } else if (countdownSeconds <= 30) {
+          display.style.color = "#f59e0b";
+        } else {
+          display.style.color = "#3182ce";
+        }
+      }
+
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function autoLogout() {
+        clearInterval(countdownInterval);
+        performAutoLogout();
+      }
+
+      function performAutoLogout() {
+        // Simpan informasi logout
+        const logoutInfo = {
+          reason: "idle_timeout",
+          timestamp: new Date().toISOString(),
+          lastPage: window.location.pathname,
+        };
+
+        console.log("Logout Info:", logoutInfo);
+
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect ke halaman login
+        alert(
+          "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+        );
+        window.location.href = "index.html";
+      }
+
+      // ==================== EVENT LISTENERS UNTUK AKTIVITAS ====================
+      const activityEvents = [
+        "mousedown",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart",
+        "click",
+      ];
+
+      // Add activity listeners
+      activityEvents.forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, true);
+      });
+
+      // ==================== PAGE VISIBILITY API ====================
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          // Reset timer when user comes back to the page
+          resetIdleTimer();
+        }
+      });
+
+      // Check submission status
+      async function checkSubmissionStatus() {
+        const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+        if (!currentUser) {
+          return false;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/api/check-submission/${currentUser.id}`
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            return result.hasSubmitted || false;
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+        }
+
+        return false;
+      }
+
+      // Load user data and saved data when page loads
+      window.addEventListener("DOMContentLoaded", async function () {
+        // Check if already submitted, redirect to review page
+        const hasSubmitted = await checkSubmissionStatus();
+        if (hasSubmitted) {
+          window.location.href = "formulir_pendaftaran_reviewandsubmit.html";
+          return;
+        }
+
+        loadCurrentUser();
+        setupMenuNavigation();
+
+        // Start idle timer immediately
+        resetIdleTimer();
+      });
+
+      // Load current user from session storage
+      function loadCurrentUser() {
+        const userData = sessionStorage.getItem("currentUser");
+        if (userData) {
+          currentUser = JSON.parse(userData);
+          updateUserInterface();
+          loadUserData();
+        } else {
+          // Redirect to login if no user session
+          window.location.href = "index.html";
+        }
+      }
+
+      // Program data based on database structure
+      const prodiData = {
+        1: [
+          // Teknik Sipil
+          { id: 1, nama: "D3 Teknik Sipil", kode: "TS" },
+          {
+            id: 2,
+            nama: "D4 Perencanaan Perumahan dan Pemukiman",
+            kode: "PPP",
+          },
+          {
+            id: 3,
+            nama: "D4 Teknologi Rekayasa Konstruksi Jalan dan Jembatan",
+            kode: "TRKJJ",
+          },
+        ],
+        2: [
+          // Teknik Mesin
+          { id: 4, nama: "D1 Operator dan Peralatan Alat Berat", kode: "OPAB" },
+          { id: 5, nama: "D2 Pemeliharaan Kendaraan Ringan", kode: "PKR" },
+          { id: 6, nama: "D3 Teknik Mesin", kode: "TM3" },
+          { id: 7, nama: "D4 Teknik Mesin", kode: "TM4" },
+        ],
+        3: [
+          // Teknik Elektro
+          { id: 8, nama: "D3 Teknik Listrik", kode: "TL" },
+          { id: 9, nama: "D3 Teknik Informatika", kode: "TI" },
+          {
+            id: 10,
+            nama: "D4 Teknologi Rekayasa Sistem Elektronika",
+            kode: "TRSE",
+          },
+        ],
+        4: [
+          // Administrasi Bisnis
+          { id: 11, nama: "D3 Administrasi Bisnis", kode: "AB" },
+          { id: 12, nama: "D4 Administrasi Bisnis dan Otomotif", kode: "ABO" },
+          { id: 13, nama: "D4 Administrasi Negara", kode: "AN" },
+          { id: 14, nama: "D4 Pengelolaan Usaha Rekreasi", kode: "PUR" },
+        ],
+        5: [
+          // Akuntansi
+          { id: 15, nama: "D3 Akuntansi", kode: "AK3" },
+          { id: 16, nama: "D4 Akuntansi", kode: "AK4" },
+          { id: 17, nama: "D4 Akuntansi Perpajakan", kode: "AKP" },
+          { id: 18, nama: "D4 Perbankan dan Keuangan Digital", kode: "PKD" },
+        ],
+        6: [
+          // Teknologi Pertanian
+          {
+            id: 19,
+            nama: "D4 Pengolahan Hasil Perkebunan Terpadu",
+            kode: "PHPT",
+          },
+          { id: 20, nama: "D4 Manajemen Perkebunan", kode: "MP" },
+          { id: 21, nama: "D4 Budidaya Tanaman Perkebunan", kode: "BTP" },
+        ],
+        7: [
+          // Ilmu Kelautan dan Perikanan
+          { id: 22, nama: "D3 Budidaya Perikanan", kode: "BP" },
+          { id: 23, nama: "D3 Teknologi Penangkapan Ikan", kode: "TPI" },
+          {
+            id: 24,
+            nama: "D4 Teknologi Pengolahan dan Penyimpanan Hasil Perikanan",
+            kode: "TPPHP",
+          },
+        ],
+        8: [
+          // Teknik Arsitektur
+          { id: 25, nama: "D3 Arsitektur", kode: "AS" },
+          { id: 26, nama: "D4 Desain Kawasan Binaan", kode: "DKB" },
+          { id: 27, nama: "D4 Arsitektur Bangunan Gedung", kode: "ABG" },
+        ],
+      };
+
+      // Load programs based on selected department
+      function loadProdiByJurusan() {
+        const jurusanSelect = document.getElementById("jurusanDipilih");
+        const prodiSelect = document.getElementById("prodiDipilih");
+
+        // Clear existing options
+        prodiSelect.innerHTML = '<option value="">Pilih Program Studi</option>';
+
+        const selectedJurusan = jurusanSelect.value;
+
+        if (selectedJurusan && prodiData[selectedJurusan]) {
+          prodiData[selectedJurusan].forEach((prodi) => {
+            const option = document.createElement("option");
+            option.value = prodi.id;
+            option.textContent = prodi.nama;
+            prodiSelect.appendChild(option);
+          });
+        }
+      }
+
+      // Update user interface with user data
+      function updateUserInterface() {
+        if (currentUser) {
+          // Update profile section
+          const profileName = document.querySelector(".profile-name");
+          const profileEmail = document.querySelector(".profile-email");
+          const profileAvatar = document.querySelector(".profile-avatar");
+
+          if (profileName) {
+            profileName.textContent =
+              currentUser.nama_lengkap || currentUser.email || "User";
+          }
+
+          if (profileEmail) {
+            profileEmail.textContent = currentUser.email || "";
+          }
+
+          if (profileAvatar) {
+            const initials = (
+              currentUser.nama_lengkap ||
+              currentUser.email ||
+              "U"
+            )
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase())
+              .join("")
+              .substring(0, 2);
+            profileAvatar.textContent = initials;
+          }
+        }
+      }
+
+      // Load user data from database
+      async function loadUserData() {
+        try {
+          const response = await fetch(
+            `${API_URL}/api/user-data/${currentUser.id}`
+          );
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              // Update currentUser with complete data from database
+              if (result.data.nama_lengkap) {
+                currentUser.nama_lengkap = result.data.nama_lengkap;
+                // Update session storage
+                sessionStorage.setItem(
+                  "currentUser",
+                  JSON.stringify(currentUser)
+                );
+                // Update UI with latest data
+                updateUserInterface();
+              }
+              populateForm(result.data);
+            }
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+        }
+      }
+
+      // Populate form with existing data
+      function populateForm(userData) {
+        document.getElementById("asalSekolah").value =
+          userData.asal_sekolah || "";
+        document.getElementById("nilaiRataRata").value =
+          userData.nilai_rata_rata || "";
+        document.getElementById("tahunLulus").value =
+          userData.tahun_lulus || "";
+
+        // Set jurusan and load corresponding prodi
+        if (userData.id_jurusan) {
+          document.getElementById("jurusanDipilih").value = userData.id_jurusan;
+          loadProdiByJurusan();
+
+          // Set prodi after loading
+          setTimeout(() => {
+            if (userData.id_prodi) {
+              document.getElementById("prodiDipilih").value = userData.id_prodi;
+            }
+          }, 100);
+        }
+      }
+
+      // Setup menu navigation
+      function setupMenuNavigation() {
+        const menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function (e) {
+            if (this.getAttribute("href") !== "#") return;
+            e.preventDefault();
+            menuItems.forEach((m) => m.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+      }
+
+      // Form submission
+      document
+        .getElementById("akademikForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // Get form data
+          const formData = {
+            asal_sekolah: document.getElementById("asalSekolah").value,
+            nilai_rata_rata: document.getElementById("nilaiRataRata").value,
+            tahun_lulus: document.getElementById("tahunLulus").value,
+            id_jurusan: document.getElementById("jurusanDipilih").value,
+            id_prodi: document.getElementById("prodiDipilih").value,
+          };
+
+          // Debug form values
+          console.log("Form element values:", {
+            asalSekolah: document.getElementById("asalSekolah").value,
+            nilaiRataRata: document.getElementById("nilaiRataRata").value,
+            tahunLulus: document.getElementById("tahunLulus").value,
+            jurusanDipilih: document.getElementById("jurusanDipilih").value,
+            prodiDipilih: document.getElementById("prodiDipilih").value,
+          });
+
+          // Validate
+          if (
+            !formData.asal_sekolah ||
+            !formData.nilai_rata_rata ||
+            !formData.tahun_lulus ||
+            !formData.id_jurusan ||
+            !formData.id_prodi
+          ) {
+            console.log("Validation failed - missing fields:", {
+              asal_sekolah: formData.asal_sekolah,
+              nilai_rata_rata: formData.nilai_rata_rata,
+              tahun_lulus: formData.tahun_lulus,
+              id_jurusan: formData.id_jurusan,
+              id_prodi: formData.id_prodi,
+            });
+            showNotification("error", "Error", "Mohon lengkapi semua field");
+            return;
+          }
+
+          console.log("Form data being sent:", formData);
+
+          // Show loading
+          showLoading(true);
+
+          try {
+            const response = await fetch(`${API_URL}/api/save-akademik`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: currentUser.id,
+                ...formData,
+              }),
+            });
+
+            const result = await response.json();
+            showLoading(false);
+
+            if (result.success) {
+              showNotification(
+                "success",
+                "Berhasil",
+                "Data akademik berhasil disimpan!"
+              );
+              setTimeout(() => {
+                window.location.href = "formulir_pendaftaran_dataorangtua.html";
+              }, 2000);
+            } else {
+              showNotification(
+                "error",
+                "Gagal",
+                result.message || "Terjadi kesalahan saat menyimpan data"
+              );
+            }
+          } catch (error) {
+            showLoading(false);
+            console.error("Error saving data:", error);
+            showNotification(
+              "error",
+              "Kesalahan Koneksi",
+              "Tidak dapat terhubung ke server"
+            );
+          }
+        });
+
+      // Handle previous button - navigasi kembali ke data pribadi
+      function handlePrevious() {
+        // Simpan data saat ini sebelum kembali
+        const formData = {
+          asal_sekolah: document.getElementById("asalSekolah").value,
+          nilai_rata_rata: document.getElementById("nilaiRataRata").value,
+          tahun_lulus: document.getElementById("tahunLulus").value,
+          id_jurusan: document.getElementById("jurusanDipilih").value,
+          id_prodi: document.getElementById("prodiDipilih").value,
+        };
+
+        // Simpan data saat ini ke database
+        if (
+          formData.asal_sekolah ||
+          formData.nilai_rata_rata ||
+          formData.tahun_lulus ||
+          formData.id_jurusan ||
+          formData.id_prodi
+        ) {
+          saveCurrentDataBeforeLeave(formData);
+        } else {
+          window.location.href = "formulir_pendaftaran.html";
+        }
+      }
+
+      // Simpan data sebelum pindah halaman
+      async function saveCurrentDataBeforeLeave(formData) {
+        try {
+          await fetch(`${API_URL}/api/save-akademik`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: currentUser.id,
+              ...formData,
+            }),
+          });
+          window.location.href = "formulir_pendaftaran.html";
+        } catch (error) {
+          console.error("Error saving before leave:", error);
+          window.location.href = "formulir_pendaftaran.html";
+        }
+      }
+
+      // Handle save draft
+      async function handleSaveDraft() {
+        const formData = {
+          asal_sekolah: document.getElementById("asalSekolah").value,
+          nilai_rata_rata: document.getElementById("nilaiRataRata").value,
+          tahun_lulus: document.getElementById("tahunLulus").value,
+          id_jurusan: document.getElementById("jurusanDipilih").value,
+          id_prodi: document.getElementById("prodiDipilih").value,
+        };
+
+        showLoading(true);
+
+        try {
+          const response = await fetch(`${API_URL}/api/save-akademik`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: currentUser.id,
+              ...formData,
+            }),
+          });
+
+          const result = await response.json();
+          showLoading(false);
+
+          if (result.success) {
+            showNotification("success", "Berhasil", "Draft berhasil disimpan!");
+          } else {
+            showNotification(
+              "error",
+              "Gagal",
+              result.message || "Gagal menyimpan draft"
+            );
+          }
+        } catch (error) {
+          showLoading(false);
+          console.error("Error saving draft:", error);
+          showNotification(
+            "error",
+            "Kesalahan Koneksi",
+            "Tidak dapat terhubung ke server"
+          );
+        }
+      }
+
+      // Logout function
+      function handleLogout() {
+        showLogoutModal();
+      }
+
+      // Show logout confirmation modal
+      function showLogoutModal() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.add("show");
+      }
+
+      // Cancel logout
+      function cancelLogout() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.remove("show");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        performLogout();
+      }
+
+      function performLogout() {
+        // Clear session storage
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect to login page
+        window.location.href = "index.html";
+      }
+
+      // Close modal when clicking outside
+      document.addEventListener("DOMContentLoaded", function () {
+        const logoutOverlay = document.getElementById("logoutOverlay");
+        if (logoutOverlay) {
+          logoutOverlay.addEventListener("click", function (e) {
+            if (e.target === this) {
+              cancelLogout();
+            }
+          });
+        }
+      });
+
+      // Show notification function
+      function showNotification(type, title, message) {
+        // Remove existing notification if any
+        const existingNotification = document.querySelector(".notification");
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+                <i class="fas fa-${
+                  type === "success" ? "check-circle" : "exclamation-circle"
+                }"></i>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+            `;
+
+        // Add styles
+        notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 18px 24px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 300px;
+                border-left: 4px solid ${
+                  type === "success" ? "#4caf50" : "#f44336"
+                };
+                transform: translateX(120%);
+                transition: transform 0.3s ease;
+            `;
+
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+          notification.style.transform = "translateX(0)";
+        }, 100);
+
+        // Remove after 4 seconds
+        setTimeout(() => {
+          notification.style.transform = "translateX(120%)";
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        }, 4000);
+      }
+
+      // Show/hide loading
+      function showLoading(show) {
+        let overlay = document.getElementById("loading-overlay");
+
+        if (!overlay) {
+          overlay = document.createElement("div");
+          overlay.id = "loading-overlay";
+          overlay.innerHTML = `
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Memproses...</p>
+                    </div>
+                `;
+          overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                `;
+
+          const loadingContent = overlay.querySelector(".loading-content");
+          loadingContent.style.cssText = `
+                    background: white;
+                    padding: 40px;
+                    border-radius: 12px;
+                    text-align: center;
+                `;
+
+          overlay.querySelector("i").style.cssText = `
+                    font-size: 50px;
+                    color: #365368;
+                    margin-bottom: 20px;
+                `;
+
+          overlay.querySelector("p").style.cssText = `
+                    color: #365368;
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin: 0;
+                `;
+
+          document.body.appendChild(overlay);
+        }
+
+        overlay.style.display = show ? "flex" : "none";
+      }
+
+      // Animate progress on load
+      window.addEventListener("load", function () {
+        setTimeout(() => {
+          document.getElementById("progressFill").style.width = "40%";
+        }, 100);
+      });
+
+      // Auto-save functionality
+      let autoSaveTimer;
+      const formInputs = document.querySelectorAll(".form-control");
+
+      formInputs.forEach((input) => {
+        input.addEventListener("input", function () {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = setTimeout(() => {
+            console.log("Auto-saving draft...");
+            handleSaveDraft();
+          }, 10000); // Auto-save after 10 seconds of inactivity
+        });
+      });
+    </script>
+  </body>
+</html>

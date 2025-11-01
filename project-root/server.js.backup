@@ -1,0 +1,584 @@
+// server.js
+const express = require("express");
+const mysql = require("mysql2");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const path = require("path");
+
+const app = express();
+const PORT = 3000;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
+// Konfigurasi Database
+const db = mysql.createConnection({
+  host: "44.220.144.82",
+  user: "remoteuser",
+  password: "passwordku123",
+  database: "pmb",
+  port: 3306,
+});
+
+// Koneksi Database
+db.connect((err) => {
+  if (err) {
+    console.error("Error connecting to database:", err);
+    return;
+  }
+  console.log("Connected to MySQL database");
+});
+
+// Route untuk halaman utama
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Route untuk halaman register
+app.get("/register.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "register.html"));
+});
+
+app.get("/regis.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "register.html"));
+});
+
+// Route untuk halaman dashboard
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
+// API Login
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Email dan password harus diisi",
+    });
+  }
+
+  const query = "SELECT * FROM user WHERE email = ?";
+
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({
+        success: false,
+        message: "Terjadi kesalahan pada server",
+      });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        success: false,
+        message: "Email tidak ditemukan",
+      });
+    }
+
+    const user = results[0];
+    let passwordMatch = false;
+
+    // Cek apakah password di-hash dengan bcrypt
+    if (user.password.startsWith("$2a$") || user.password.startsWith("$2b$")) {
+      try {
+        passwordMatch = await bcrypt.compare(password, user.password);
+      } catch (bcryptErr) {
+        console.error("Bcrypt error:", bcryptErr);
+        return res.json({
+          success: false,
+          message: "Terjadi kesalahan saat verifikasi password",
+        });
+      }
+    } else {
+      passwordMatch = password === user.password;
+    }
+
+    if (!passwordMatch) {
+      return res.json({
+        success: false,
+        message: "Password salah",
+      });
+    }
+
+    // Login berhasil
+    return res.json({
+      success: true,
+      message: "Login berhasil",
+      user: {
+        id: user.id_pengguna,
+        username: user.email,
+        email: user.email,
+        nama_lengkap: user.nama_lengkap,
+        role: user.role,
+      },
+    });
+  });
+});
+
+// API Register
+app.post("/api/register", async (req, res) => {
+  const { email, namaLengkap, password, confirmPassword } = req.body;
+
+  if (!email || !password || !namaLengkap) {
+    return res.json({
+      success: false,
+      message: "Email, nama lengkap, dan password harus diisi",
+    });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.json({
+      success: false,
+      message: "Format email tidak valid",
+    });
+  }
+
+  if (password.length < 8) {
+    return res.json({
+      success: false,
+      message: "Password minimal 8 karakter",
+    });
+  }
+
+  if (confirmPassword !== undefined && password !== confirmPassword) {
+    return res.json({
+      success: false,
+      message: "Password dan konfirmasi password tidak cocok",
+    });
+  }
+
+  const checkQuery = "SELECT * FROM user WHERE email = ?";
+
+  db.query(checkQuery, [email], async (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({
+        success: false,
+        message: "Terjadi kesalahan pada server",
+      });
+    }
+
+    if (results.length > 0) {
+      return res.json({
+        success: false,
+        message: "Email sudah terdaftar",
+      });
+    }
+
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const insertQuery =
+        "INSERT INTO user (email, password, nama_lengkap, role) VALUES (?, ?, ?, ?)";
+      const values = [email, hashedPassword, namaLengkap, "mahasiswa"];
+
+      db.query(insertQuery, values, (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res.json({
+            success: false,
+            message: "Terjadi kesalahan saat mendaftar",
+          });
+        }
+
+        return res.json({
+          success: true,
+          message: "Registrasi berhasil",
+          user: {
+            id: result.insertId,
+            username: email,
+            namaLengkap: namaLengkap,
+            role: "mahasiswa",
+          },
+        });
+      });
+    } catch (hashErr) {
+      console.error("Hashing error:", hashErr);
+      return res.json({
+        success: false,
+        message: "Terjadi kesalahan saat mengenkripsi password",
+      });
+    }
+  });
+});
+
+// API Save Form Data - Data Pribadi (FIXED VERSION)
+app.post("/api/save-pribadi", (req, res) => {
+  const { userId, ...formData } = req.body;
+
+  console.log("=== SAVE PRIBADI DEBUG ===");
+  console.log("Request body:", req.body);
+  console.log("UserId:", userId);
+
+  if (!userId) {
+    console.log("Error: User ID tidak ditemukan");
+    return res.json({ success: false, message: "User ID tidak ditemukan" });
+  }
+
+  // Normalize jenis_kelamin to match enum values
+  let jenisKelamin = null;
+  if (formData.jenisKelamin) {
+    if (formData.jenisKelamin.toLowerCase() === 'laki-laki') {
+      jenisKelamin = 'Laki-Laki';
+    } else if (formData.jenisKelamin.toLowerCase() === 'perempuan') {
+      jenisKelamin = 'Perempuan';
+    }
+  }
+
+  // Extract ID values for foreign key validation
+  const provinsiId = formData.provinsi ? parseInt(formData.provinsi) : null;
+  const kabupatenId = formData.kabupatenKota ? parseInt(formData.kabupatenKota) : null;
+  const kecamatanId = formData.kecamatan ? parseInt(formData.kecamatan) : null;
+  const kelurahanId = formData.kelurahan ? parseInt(formData.kelurahan) : null;
+
+  // Check if foreign key values exist before inserting - with error handling for missing tables
+  const checkFKQuery = `
+    SELECT
+      (SELECT COUNT(*) as count FROM provinsi WHERE id_provinsi = ?) as provinsi_exists,
+      (SELECT COUNT(*) as count FROM kabupaten WHERE id_kabupaten = ?) as kabupaten_exists,
+      (SELECT COUNT(*) as count FROM kecamatan WHERE id_kecamatan = ?) as kecamatan_exists,
+      (SELECT COUNT(*) as count FROM kelurahan WHERE id_kelurahan = ?) as kelurahan_exists
+  `;
+
+  db.query(checkFKQuery, [provinsiId, kabupatenId, kecamatanId, kelurahanId], (err, fkResults) => {
+    let finalProvinsi = provinsiId;
+    let finalKabupaten = kabupatenId;
+    let finalKecamatan = kecamatanId;
+    let finalKelurahan = kelurahanId;
+
+    if (err) {
+      console.log("Foreign key tables might not exist, setting all location IDs to NULL");
+      console.log("FK check error:", err.code || err.message);
+      // If tables don't exist, set all location IDs to NULL
+      finalProvinsi = null;
+      finalKabupaten = null;
+      finalKecamatan = null;
+      finalKelurahan = null;
+    } else {
+      // If foreign keys don't exist, set them to NULL
+      finalProvinsi = fkResults[0].provinsi_exists > 0 ? provinsiId : null;
+      finalKabupaten = fkResults[0].kabupaten_exists > 0 ? kabupatenId : null;
+      finalKecamatan = fkResults[0].kecamatan_exists > 0 ? kecamatanId : null;
+      finalKelurahan = fkResults[0].kelurahan_exists > 0 ? kelurahanId : null;
+
+      console.log("Foreign key validation:", {
+        provinsi: { exists: fkResults[0].provinsi_exists > 0, id: provinsiId, final: finalProvinsi },
+        kabupaten: { exists: fkResults[0].kabupaten_exists > 0, id: kabupatenId, final: finalKabupaten },
+        kecamatan: { exists: fkResults[0].kecamatan_exists > 0, id: kecamatanId, final: finalKecamatan },
+        kelurahan: { exists: fkResults[0].kelurahan_exists > 0, id: kelurahanId, final: finalKelurahan }
+      });
+    }
+
+    // Check if data exists first, then decide to INSERT or UPDATE
+    const checkQuery = "SELECT id_mahasiswa FROM mahasiswa WHERE id_pengguna = ?";
+
+    db.query(checkQuery, [userId], (err, checkResults) => {
+      if (err) {
+        console.error("Error checking existing data:", err);
+        return res.json({ success: false, message: "Error checking existing data" });
+      }
+
+      let query;
+      const values = [
+        formData.namaLengkap || null,
+        formData.nik || null,
+        formData.tempatLahir || null,
+        formData.tanggalLahir || null,
+        jenisKelamin,
+        formData.agama || null,
+        formData.noHP || null,
+        formData.email || null,
+        formData.alamat || null,
+        finalProvinsi,
+        finalKabupaten,
+        finalKecamatan,
+        finalKelurahan,
+        formData.kodePos || null,
+      ];
+
+      if (checkResults.length > 0) {
+        // UPDATE existing data
+        query = `UPDATE mahasiswa SET nama_lengkap=?, nik=?, tempat_lahir=?, tanggal_lahir=?,
+                 jenis_kelamin=?, agama=?, no_hp=?, email=?, alamat_mahasiswa=?, id_provinsi=?,
+                 id_kabupaten=?, id_kecamatan=?, id_kelurahan=?, kode_pos=?
+                 WHERE id_pengguna=?`;
+        values.push(userId);
+        console.log("Using UPDATE query for existing user");
+      } else {
+        // INSERT new data
+        query = `INSERT INTO mahasiswa (id_pengguna, nama_lengkap, nik, tempat_lahir, tanggal_lahir,
+                 jenis_kelamin, agama, no_hp, email, alamat_mahasiswa, id_provinsi, id_kabupaten,
+                 id_kecamatan, id_kelurahan, kode_pos, tanggal_daftar)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        values.unshift(userId); // Add userId at the beginning
+        console.log("Using INSERT query for new user");
+      }
+
+      db.query(query, values, (err, result) => {
+        if (err) {
+          console.error("Database error:", err);
+          console.error("Error details:", {
+            code: err.code,
+            errno: err.errno,
+            sqlMessage: err.sqlMessage,
+            sqlState: err.sqlState
+          });
+          return res.json({ success: false, message: "Gagal menyimpan data: " + err.sqlMessage });
+        }
+
+        console.log("Query result:", result);
+        const operation = checkResults.length > 0 ? "diperbarui" : "ditambahkan";
+        res.json({
+          success: true,
+          message: `Data pribadi berhasil ${operation}`,
+          operation: checkResults.length > 0 ? "update" : "insert",
+          affectedRows: result.affectedRows || result.insertId || null
+        });
+      });
+    });
+});
+
+// API Save Form Data - Data Akademik
+app.post("/api/save-akademik", (req, res) => {
+  const { userId, ...formData } = req.body;
+
+  if (!userId) {
+    return res.json({ success: false, message: "User ID tidak ditemukan" });
+  }
+
+  const query = `UPDATE mahasiswa SET asal_sekolah=?, nilai_rata_rata=?, jurusan=?, prodi=?, alamat_sekolah=?
+                 WHERE id_pengguna=?`;
+
+  const values = [
+    formData.asalSekolah,
+    formData.nilaiRataRata,
+    formData.jurusanDipilih,
+    formData.prodiDipilih,
+    formData.alamatSekolah,
+    userId,
+  ];
+
+  db.query(query, values, (err) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ success: false, message: "Gagal menyimpan data" });
+    }
+    res.json({ success: true, message: "Data akademik berhasil disimpan" });
+  });
+});
+
+// API Save Form Data - Data Orang Tua
+app.post("/api/save-orangtua", (req, res) => {
+  const { userId, ...formData } = req.body;
+
+  if (!userId) {
+    return res.json({ success: false, message: "User ID tidak ditemukan" });
+  }
+
+  const query = `UPDATE mahasiswa SET nama_ayah=?, pekerjaan_ayah=?, no_telp_ayah=?, pendidikan_ayah=?,
+                 nama_ibu=?, pekerjaan_ibu=?, no_telp_ibu=?, pendidikan_ibu=?, alamat_ortu=?,
+                 penghasilan_ortu=?, jumlah_tanggungan=?
+                 WHERE id_pengguna=?`;
+
+  const values = [
+    formData.namaAyah,
+    formData.pekerjaanAyah,
+    formData.noTeleponAyah,
+    formData.pendidikanAyah,
+    formData.namaIbu,
+    formData.pekerjaanIbu,
+    formData.noTeleponIbu,
+    formData.pendidikanIbu,
+    formData.alamatOrangTua,
+    formData.penghasilanOrtu,
+    formData.jumlahTanggungan,
+    userId,
+  ];
+
+  db.query(query, values, (err) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ success: false, message: "Gagal menyimpan data" });
+    }
+    res.json({ success: true, message: "Data orang tua berhasil disimpan" });
+  });
+});
+
+// API Submit Final (schema does not include status_akun; keep endpoint for flow)
+app.post("/api/submit-final", (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.json({ success: false, message: "User ID tidak ditemukan" });
+  }
+
+  // No user table update necessary
+  res.json({ success: true, message: "Data berhasil disubmit" });
+});
+
+// API Get User Data
+app.get("/api/user-data/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  // First try to get data from mahasiswa table (with complete registration data)
+  const query = `SELECT m.*, u.email as username, u.nama_lengkap as user_nama_lengkap,
+                 m.alamat_mahasiswa as alamat,  -- Map for frontend compatibility
+                 m.id_provinsi as provinsi,     -- Map for frontend compatibility
+                 m.id_kabupaten as kabupaten_kota, -- Map for frontend compatibility
+                 m.id_kecamatan as kecamatan   -- Map for frontend compatibility
+                 FROM mahasiswa m
+                 LEFT JOIN user u ON m.id_pengguna = u.id_pengguna
+                 WHERE m.id_pengguna = ?`;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.json({ success: false, message: "Gagal mengambil data" });
+    }
+
+    if (results.length > 0) {
+      // If found in mahasiswa table, use mahasiswa.nama_lengkap first, fallback to user.nama_lengkap
+      const userData = results[0];
+      if (userData.nama_lengkap) {
+        res.json({ success: true, data: userData });
+      } else if (userData.user_nama_lengkap) {
+        userData.nama_lengkap = userData.user_nama_lengkap;
+        res.json({ success: true, data: userData });
+      } else {
+        res.json({ success: true, data: userData });
+      }
+    } else {
+      // If not found in mahasiswa table, get basic data from user table
+      const userQuery = "SELECT id_pengguna as id, email as username, nama_lengkap, email, role FROM user WHERE id_pengguna = ?";
+
+      db.query(userQuery, [userId], (err, userResults) => {
+        if (err) {
+          console.error("Database error:", err);
+          return res.json({ success: false, message: "Gagal mengambil data user" });
+        }
+
+        if (userResults.length === 0) {
+          return res.json({ success: false, message: "User tidak ditemukan" });
+        }
+
+        // Return user data with default values for missing mahasiswa fields
+        const userData = userResults[0];
+        res.json({
+          success: true,
+          data: {
+            ...userData,
+            nama_lengkap: userData.nama_lengkap || userData.email,
+            nik: null,
+            tempat_lahir: null,
+            tanggal_lahir: null,
+            jenis_kelamin: null,
+            agama: null,
+            no_hp: null,
+            alamat: null,  // Frontend expects 'alamat'
+            provinsi: null,
+            kabupaten_kota: null,  // Frontend expects 'kabupaten_kota'
+            kecamatan: null,
+            kode_pos: null,
+            asal_sekolah: null,
+            nilai_rata_rata: null,
+            jurusan: null,
+            prodi: null,
+            alamat_sekolah: null,
+            nama_ayah: null,
+            pekerjaan_ayah: null,
+            no_telp_ayah: null,
+            pendidikan_ayah: null,
+            nama_ibu: null,
+            pekerjaan_ibu: null,
+            no_telp_ibu: null,
+            pendidikan_ibu: null,
+            alamat_ortu: null,
+            penghasilan_ortu: null,
+            jumlah_tanggungan: null
+          }
+        });
+      });
+    }
+  });
+});
+
+// API Statistik
+app.get("/api/stats", (req, res) => {
+  const queries = {
+    totalMahasiswa:
+      'SELECT COUNT(*) as count FROM user WHERE role = "mahasiswa"',
+    // programStudi: 'SELECT COUNT(DISTINCT prodi) as count FROM mahasiswa WHERE prodi IS NOT NULL',
+    // jurusan: 'SELECT COUNT(DISTINCT jurusan) as count FROM mahasiswa WHERE jurusan IS NOT NULL'
+    programStudi: "SELECT COUNT(*) as count FROM prodi",
+    jurusan: "SELECT COUNT(*) as count From jurusan",
+  };
+
+  const stats = {};
+  let completed = 0;
+  const totalQueries = Object.keys(queries).length;
+
+  Object.keys(queries).forEach((key) => {
+    db.query(queries[key], (err, results) => {
+      if (!err && results && results.length > 0) {
+        stats[key] = results[0].count;
+      } else {
+        const fallbackValues = {
+          totalMahasiswa: 1250,
+          programStudi: 42,
+          jurusan: 15,
+        };
+        stats[key] = fallbackValues[key] || 0;
+      }
+
+      completed++;
+      if (completed === totalQueries) {
+        res.json(stats);
+      }
+    });
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Terjadi kesalahan pada server",
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint tidak ditemukan",
+  });
+});
+
+// Start server
+app.listen(3000, "0.0.0.0", () => {
+  console.log("========================================");
+  console.log("Server running on http://44.220.144.82:3000");
+  console.log("Database: pmb");
+  console.log("Host: 44.220.144.82");
+  console.log("========================================");
+});
+
+// Handle graceful shutdown
+process.on("SIGINT", () => {
+  console.log("\nShutting down gracefully...");
+  db.end((err) => {
+    if (err) {
+      console.error("Error closing database connection:", err);
+    } else {
+      console.log("Database connection closed");
+    }
+    process.exit(err ? 1 : 0);
+  });
+});

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style/login.css">
+    <title>Pendaftaran Mahasiswa Baru</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <div class="header">
+                <h1>SISTEM PENDATAAN PENERIMAAN MAHASISWA BARU <br> POLITEKNIK NEGERI PONTIANAK</h1>
+                <p>Platform terpadu untuk pengelolaan data penerimaan mahasiswa baru yang efisien dan transparan</p>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <img src="assets/audience.png" alt="audience" class="icon">
+                    <h3 id="total-mahasiswa">0</h3>
+                    <p>Total Calon Mahasiswa</p>
+                </div>
+                <div class="stat-card">
+                    <img src="assets/book.png" alt="book" class="icon">
+                    <h3 id="program-studi">0</h3>
+                    <p>Program Studi</p>
+                </div>
+                <div class="stat-card">
+                    <img src="assets/medal.png" alt="medal" class="icon">
+                    <h3 id="jurusan">0</h3>
+                    <p>Jurusan</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>&copy; 2025 Sistem Penerimaan Mahasiswa Baru. All rights reserved.</p>
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="login-container">
+                <div class="login-header">
+                    <h2>LOGIN</h2>
+                    <p>Silakan masuk ke akun Anda</p>
+                </div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="email" class="form-control" placeholder="Masukkan email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Kata Sandi</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Ingat saya</label>
+                        </div>
+                        <a href="reset_password.html" class="forgot-password">Lupa kata sandi?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="btn-login">Masuk</button>
+                </form>
+
+                <div class="register-link">
+                    <p>Belum punya akun? <a href="register.html">Daftar sekarang</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <p id="notification-title">Berhasil</p>
+            <p id="notification-message">Anda berhasil masuk</p>
+        </div>
+    </div>
+
+    <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: #365368; margin-bottom: 15px;"></i>
+            <p style="color: #365368; font-weight: 600;">Memproses login...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const userData = sessionStorage.getItem('currentUser') || sessionStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                // Normalize to currentUser
+                sessionStorage.setItem('currentUser', userData);
+                // Redirect to dashboard if already logged in
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Load statistics from API
+            loadStatistics();
+
+            // Form submission
+            const loginForm = document.getElementById('login-form');
+            const btnLogin = document.getElementById('btn-login');
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember').checked;
+                
+                // Simple validation
+                if (!email || !password) {
+                    showNotification('error', 'Error', 'Mohon lengkapi semua field');
+                    return;
+                }
+                
+                // Show loading and disable button
+                showLoading(true);
+                btnLogin.disabled = true;
+                btnLogin.textContent = 'Memproses...';
+                
+                try {
+                    // Send login request to API
+                    const response = await fetch(`${API_URL}/api/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    showLoading(false);
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'Masuk';
+
+                    if (data.success) {
+                        // Save user data to session storage
+                        sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                        
+                        // Save to localStorage if remember me is checked
+                        if (remember) {
+                            localStorage.setItem('rememberedUser', email);
+                        } else {
+                            localStorage.removeItem('rememberedUser');
+                        }
+                        
+                        showNotification('success', 'Berhasil', 'Login berhasil! Mengalihkan ke dashboard...');
+                        
+                        // Redirect to dashboard after 1.5 seconds
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                    } else {
+                        // Handle different error messages
+                        if (data.message.includes('tidak ditemukan') || data.message.includes('salah')) {
+                            showNotification('error', 'Akun Tidak Ditemukan', 'Email atau password yang Anda masukkan salah');
+                        } else {
+                            showNotification('error', 'Login Gagal', data.message);
+                        }
+                    }
+                } catch (error) {
+                    showLoading(false);
+                    btnLogin.disabled = false;
+                    btnLogin.textContent = 'Masuk';
+                    console.error('Login error:', error);
+                    showNotification('error', 'Kesalahan Koneksi', 'Tidak dapat terhubung ke server. Pastikan server berjalan.');
+                }
+            });
+
+            // Load remembered user if exists
+            const rememberedUser = localStorage.getItem('rememberedUser');
+            if (rememberedUser) {
+                document.getElementById('email').value = rememberedUser;
+                document.getElementById('remember').checked = true;
+            }
+        });
+
+        // Load statistics from API
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_URL}/api/stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+                    
+                    if (stats.totalMahasiswa !== undefined) {
+                        animateCounter('total-mahasiswa', stats.totalMahasiswa);
+                    }
+                    if (stats.programStudi !== undefined) {
+                        animateCounter('program-studi', stats.programStudi);
+                    }
+                    if (stats.jurusan !== undefined) {
+                        animateCounter('jurusan', stats.jurusan);
+                    }
+                } else {
+                    // Fallback to default values if API fails
+                    animateCounter('total-mahasiswa', 1250);
+                    animateCounter('program-studi', 42);
+                    animateCounter('jurusan', 15);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                // Fallback to default values
+                animateCounter('total-mahasiswa', 1250);
+                animateCounter('program-studi', 42);
+                animateCounter('jurusan', 15);
+            }
+        }
+
+        // Animate counter function
+        function animateCounter(id, target) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 30);
+        }
+
+        // Show notification function
+        function showNotification(type, title, message) {
+            const notification = document.getElementById('notification');
+            const icon = notification.querySelector('i');
+            const titleElement = document.getElementById('notification-title');
+            const messageElement = document.getElementById('notification-message');
+            
+            // Update notification content
+            titleElement.textContent = title;
+            messageElement.textContent = message;
+            
+            // Update notification type
+            notification.className = 'notification ' + type;
+            
+            // Update icon
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+            } else if (type === 'info') {
+                icon.className = 'fas fa-info-circle';
+            }
+            
+            // Show notification
+            notification.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+    </script>
+</body>
+</html>

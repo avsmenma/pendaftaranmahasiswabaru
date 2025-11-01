@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Sistem Penerimaan Mahasiswa</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style/dashboard.css" />
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="profile-section">
+          <div class="profile-avatar" id="profile-avatar">P</div>
+          <div class="profile-name" id="profile-name">Loading...</div>
+          <div class="profile-email" id="profile-email">Loading...</div>
+        </div>
+
+        <nav class="menu">
+          <a
+            href="#"
+            class="menu-item active"
+            onclick="handleMenuClick(event, 'dashboard')"
+          >
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="#"
+            class="menu-item"
+            onclick="handleMenuClick(event, 'formulir')"
+          >
+            <i class="fas fa-file-alt"></i>
+            <span>Formulir Pendaftaran</span>
+          </a>
+          <a
+            href="#"
+            class="menu-item"
+            onclick="handleMenuClick(event, 'pengumuman')"
+          >
+            <i class="fas fa-bell"></i>
+            <span>Pengumuman</span>
+          </a>
+          <a
+            href="#"
+            class="menu-item"
+            onclick="handleMenuClick(event, 'profil')"
+          >
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+          </a>
+        </nav>
+
+        <div class="logout-section">
+          <button class="logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <h1>Dashboard</h1>
+          <div class="header-right">
+            <button class="notification-btn">
+              <i class="fas fa-bell"></i>
+              <span class="notification-badge"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Welcome Banner -->
+          <div class="welcome-banner">
+            <div class="welcome-avatar" id="welcome-avatar">P</div>
+            <div class="welcome-text">
+              <h2 id="welcome-title">Selamat Datang, Loading...</h2>
+              <p>
+                Selamat bergabung dengan sistem penerimaan mahasiswa baru.
+                Lengkapi data Anda untuk melanjutkan proses pendaftaran.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="cards-grid">
+            <!-- Progress Card -->
+            <div class="card">
+              <div class="card-header">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                  <h3>Progres Pendaftaran</h3>
+                  <div class="card-subtext">
+                    Isi formulir untuk melengkapi pendaftaran anda
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-header">
+                  <span class="progress-label">Progres</span>
+                  <span class="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div class="checklist">
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <span class="checklist-text">Data Pribadi</span>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <span class="checklist-text">Data Akademik</span>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <span class="checklist-text">Data Orang Tua</span>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <span class="checklist-text">Upload Berkas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Card -->
+            <div class="card">
+              <div class="card-header">
+                <i class="fas fa-clock"></i>
+                <h3>Status Pendaftaran</h3>
+              </div>
+
+              <div class="status-badge">
+                <i class="fas fa-hourglass-half"></i>
+                <span>Menunggu Verifikasi</span>
+              </div>
+
+              <div class="info-list">
+                <div class="info-item">
+                  <span class="info-label">Terakhir Diperbarui:</span>
+                  <span class="info-value">12/10/2025</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alert Banner -->
+          <div class="alert-banner">
+            <div class="alert-content">
+              <i class="fas fa-exclamation-triangle alert-icon"></i>
+              <div class="alert-text">
+                <h4>Lengkapi Formulir Pendaftaran</h4>
+                <p>Anda masih perlu melengkapi formulir pendaftaran</p>
+              </div>
+            </div>
+            <button class="alert-btn" onclick="handleContinueForm()">
+              Lanjutkan Isi Form
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Idle Warning Modal -->
+    <div class="idle-overlay" id="idleOverlay">
+      <div class="idle-modal">
+        <div class="idle-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Sesi Anda Hampir Berakhir</h3>
+        <p>
+          Anda tidak aktif selama beberapa waktu. Sesi Anda akan berakhir dalam:
+        </p>
+        <div class="countdown-display" id="countdownDisplay">60</div>
+        <div class="idle-buttons">
+          <button class="btn-stay" onclick="stayLoggedIn()">
+            <i class="fas fa-check"></i> Tetap Login
+          </button>
+          <button class="btn-logout-now" onclick="logoutNow()">
+            <i class="fas fa-sign-out-alt"></i> Logout Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-overlay" id="logoutOverlay">
+      <div class="logout-modal">
+        <div class="logout-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3>Konfirmasi Logout</h3>
+        <p>
+          Apakah Anda yakin ingin keluar dari sistem? Semua data yang belum
+          disimpan akan hilang.
+        </p>
+        <div class="logout-buttons">
+          <button class="btn-cancel" onclick="cancelLogout()">
+            <i class="fas fa-times"></i> Batal
+          </button>
+          <button class="btn-confirm-logout" onclick="confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Ya, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:3000";
+
+      // ==================== USER DATA LOADING ====================
+      let currentUser = null;
+
+      // Check if user has already submitted
+      async function checkSubmissionStatus() {
+        const alertBanner = document.querySelector(".alert-banner");
+
+        if (!currentUser) {
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/api/check-submission/${currentUser.id}`
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.hasSubmitted) {
+              // Hide alert banner if user has already submitted
+              if (alertBanner) {
+                alertBanner.style.display = "none";
+              }
+              console.log("User has already submitted, hiding alert banner");
+            } else {
+              // Show alert banner if user has not submitted yet
+              if (alertBanner) {
+                alertBanner.style.display = "flex";
+              }
+              console.log("User has not submitted yet, showing alert banner");
+            }
+          } else {
+            // If API fails, show alert banner by default
+            if (alertBanner) {
+              alertBanner.style.display = "flex";
+            }
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+          // If error occurs, show alert banner by default
+          if (alertBanner) {
+            alertBanner.style.display = "flex";
+          }
+        }
+      }
+
+      // Load user data on page load
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Check if user is logged in - normalize to use 'currentUser' key
+        const userData =
+          sessionStorage.getItem("currentUser") ||
+          sessionStorage.getItem("user");
+        if (!userData) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Normalize to use 'currentUser' key
+        sessionStorage.setItem("currentUser", userData);
+        currentUser = JSON.parse(userData);
+
+        // Check submission status FIRST to determine if alert should be shown
+        // This ensures alert banner visibility is based ONLY on submission status, not progress
+        await checkSubmissionStatus();
+
+        loadUserData();
+        loadUserProgress();
+      });
+
+      // Load user data from API
+      async function loadUserData() {
+        try {
+          const response = await fetch(
+            `${API_URL}/api/user-data/${currentUser.id}`
+          );
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              updateUserInterface(result.data);
+            }
+          } else {
+            // Fallback to session storage data
+            updateUserInterfaceFallback();
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+          // Fallback to session storage data
+          updateUserInterfaceFallback();
+        }
+      }
+
+      // Load user progress from API
+      async function loadUserProgress() {
+        try {
+          console.log("Loading user progress for ID:", currentUser.id);
+          const response = await fetch(
+            `${API_URL}/api/user-progress/${currentUser.id}`
+          );
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              console.log("Progress data received:", result.progress);
+              updateProgressDisplay(result.progress);
+            }
+          } else {
+            console.error("Failed to load progress data");
+            // Set default progress
+            updateProgressDisplay({
+              dataPribadi: false,
+              dataAkademik: false,
+              dataOrangTua: false,
+              uploadDokumen: false,
+              totalProgress: 0,
+              completedSteps: 0,
+              totalSteps: 4,
+            });
+          }
+        } catch (error) {
+          console.error("Error loading user progress:", error);
+          // Set default progress
+          updateProgressDisplay({
+            dataPribadi: false,
+            dataAkademik: false,
+            dataOrangTua: false,
+            uploadDokumen: false,
+            totalProgress: 0,
+            completedSteps: 0,
+            totalSteps: 4,
+          });
+        }
+      }
+
+      // Update progress display
+      function updateProgressDisplay(progress) {
+        console.log("Updating progress display:", progress);
+
+        // Update progress bar with animation
+        const progressFill = document.querySelector(".progress-fill");
+        const progressPercentage = document.querySelector(
+          ".progress-percentage"
+        );
+
+        if (progressFill) {
+          // Animate progress bar
+          setTimeout(() => {
+            progressFill.style.transition = "width 0.8s ease-in-out";
+            progressFill.style.width = progress.totalProgress + "%";
+          }, 200);
+        }
+
+        if (progressPercentage) {
+          // Animate percentage counter
+          animateCounter(progressPercentage, progress.totalProgress);
+        }
+
+        // Update checklist items
+        const checklistItems = document.querySelectorAll(".checklist-item");
+        checklistItems.forEach((item, index) => {
+          const checkIcon = item.querySelector(".check-icon i");
+          const checklistText = item.querySelector(".checklist-text");
+
+          if (checklistText) {
+            const text = checklistText.textContent.trim();
+            let isCompleted = false;
+
+            // Map checklist items to progress data
+            if (text === "Data Pribadi") {
+              isCompleted = progress.dataPribadi;
+            } else if (text === "Data Akademik") {
+              isCompleted = progress.dataAkademik;
+            } else if (text === "Data Orang Tua") {
+              isCompleted = progress.dataOrangTua;
+            } else if (text === "Upload Berkas") {
+              isCompleted = progress.uploadDokumen;
+            }
+
+            // Update icon and styling with animation
+            setTimeout(() => {
+              if (isCompleted) {
+                checkIcon.className = "fas fa-check";
+                checkIcon.style.color = "white"; // White color for active state
+                checkIcon.style.transition = "color 0.3s ease";
+                item.style.opacity = "1";
+                item.style.transition = "opacity 0.3s ease";
+              } else {
+                checkIcon.className = "fas fa-check";
+                checkIcon.style.color = "#d1d5db"; // Gray color
+                checkIcon.style.transition = "color 0.3s ease";
+                item.style.opacity = "0.6";
+                item.style.transition = "opacity 0.3s ease";
+              }
+            }, index * 100); // Stagger the animations
+          }
+        });
+      }
+
+      // Animate counter function
+      function animateCounter(element, target) {
+        if (!element) return;
+
+        let current = 0;
+        const increment = target / 30;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current) + "%";
+        }, 30);
+      }
+
+      // Update interface with data from database
+      function updateUserInterface(userData) {
+        const name = userData.nama_lengkap || currentUser.username || "User";
+        const email =
+          userData.email || currentUser.username || "user@example.com";
+
+        // Update sidebar profile
+        document.getElementById("profile-name").textContent = name;
+        document.getElementById("profile-email").textContent = email;
+
+        // Update welcome banner
+        document.getElementById(
+          "welcome-title"
+        ).textContent = `Selamat Datang, ${name}`;
+
+        // Update avatars with initials
+        const initials = getInitials(name);
+        document.getElementById("profile-avatar").textContent = initials;
+        document.getElementById("welcome-avatar").textContent = initials;
+      }
+
+      // Fallback using session storage data
+      function updateUserInterfaceFallback() {
+        const name = currentUser.nama_lengkap || currentUser.username || "User";
+        const email =
+          currentUser.email || currentUser.username || "user@example.com";
+
+        // Update sidebar profile
+        document.getElementById("profile-name").textContent = name;
+        document.getElementById("profile-email").textContent = email;
+
+        // Update welcome banner
+        document.getElementById(
+          "welcome-title"
+        ).textContent = `Selamat Datang, ${name}`;
+
+        // Update avatars with initials
+        const initials = getInitials(name);
+        document.getElementById("profile-avatar").textContent = initials;
+        document.getElementById("welcome-avatar").textContent = initials;
+      }
+
+      // Get initials from name
+      function getInitials(name) {
+        const words = name.trim().split(" ");
+        if (words.length >= 2) {
+          return (words[0][0] + words[1][0]).toUpperCase();
+        } else if (words.length === 1) {
+          return words[0].substring(0, 2).toUpperCase();
+        }
+        return "U";
+      }
+
+      // ==================== KONFIGURASI AUTO-LOGOUT ====================
+      const IDLE_TIME = 1 * 60 * 1000;
+      const WARNING_TIME = 60; // 60 detik peringatan sebelum logout
+
+      let idleTimer = null;
+      let warningTimer = null;
+      let countdownInterval = null;
+      let countdownSeconds = 60;
+
+      // ==================== FUNGSI IDLE DETECTION ====================
+      function resetIdleTimer() {
+        // Clear existing timers
+        clearTimeout(idleTimer);
+        clearTimeout(warningTimer);
+        clearInterval(countdownInterval);
+
+        // Hide warning modal if showing
+        hideIdleWarning();
+
+        // Set new idle timer
+        idleTimer = setTimeout(() => {
+          showIdleWarning();
+        }, IDLE_TIME);
+      }
+
+      function showIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.add("show");
+
+        // Reset countdown
+        countdownSeconds = WARNING_TIME;
+        updateCountdownDisplay();
+
+        // Start countdown
+        countdownInterval = setInterval(() => {
+          countdownSeconds--;
+          updateCountdownDisplay();
+
+          if (countdownSeconds <= 0) {
+            autoLogout();
+          }
+        }, 1000);
+      }
+
+      function hideIdleWarning() {
+        const overlay = document.getElementById("idleOverlay");
+        overlay.classList.remove("show");
+        clearInterval(countdownInterval);
+      }
+
+      function updateCountdownDisplay() {
+        const display = document.getElementById("countdownDisplay");
+        display.textContent = countdownSeconds;
+
+        // Change color based on urgency
+        if (countdownSeconds <= 10) {
+          display.style.color = "#ef4444";
+        } else if (countdownSeconds <= 30) {
+          display.style.color = "#f59e0b";
+        } else {
+          display.style.color = "#3182ce";
+        }
+      }
+
+      function stayLoggedIn() {
+        hideIdleWarning();
+        resetIdleTimer();
+      }
+
+      function logoutNow() {
+        performLogout();
+      }
+
+      function autoLogout() {
+        clearInterval(countdownInterval);
+        performAutoLogout();
+      }
+
+      function performAutoLogout() {
+        // Simpan informasi logout
+        const logoutInfo = {
+          reason: "idle_timeout",
+          timestamp: new Date().toISOString(),
+          lastPage: window.location.pathname,
+        };
+
+        console.log("Logout Info:", logoutInfo);
+
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect ke halaman login
+        alert(
+          "Sesi Anda telah berakhir karena tidak aktif. Silakan login kembali."
+        );
+        window.location.href = "index.html";
+      }
+
+      // ==================== EVENT LISTENERS UNTUK AKTIVITAS ====================
+      const activityEvents = [
+        "mousedown",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart",
+        "click",
+      ];
+
+      // Add activity listeners
+      activityEvents.forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, true);
+      });
+
+      // ==================== FUNGSI DASHBOARD ORIGINAL ====================
+      // Menu navigation handler
+      function handleMenuClick(event, menuType) {
+        event.preventDefault();
+
+        // Remove active class from all menu items
+        const menuItems = document.querySelectorAll(".menu-item");
+        menuItems.forEach((m) => m.classList.remove("active"));
+
+        // Add active class to clicked item
+        event.currentTarget.classList.add("active");
+
+        // Handle navigation based on menu type
+        switch (menuType) {
+          case "dashboard":
+            // Already on dashboard, do nothing
+            break;
+          case "formulir":
+            window.location.href = "formulir_pendaftaran.html";
+            break;
+          case "pengumuman":
+            showNotification(
+              "info",
+              "Pengumuman",
+              "Halaman Pengumuman sedang dalam pengembangan"
+            );
+            break;
+          case "profil":
+            showNotification(
+              "info",
+              "Profil",
+              "Halaman Profil sedang dalam pengembangan"
+            );
+            break;
+          default:
+            console.log("Unknown menu type:", menuType);
+        }
+      }
+
+      // Notification button
+      document
+        .querySelector(".notification-btn")
+        .addEventListener("click", function () {
+          alert("Tidak ada notifikasi baru");
+        });
+
+      // Continue form button
+      function handleContinueForm() {
+        window.location.href = "formulir_pendaftaran.html";
+      }
+
+      // Logout function
+      function handleLogout() {
+        showLogoutModal();
+      }
+
+      // Show logout confirmation modal
+      function showLogoutModal() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.add("show");
+      }
+
+      // Cancel logout
+      function cancelLogout() {
+        const overlay = document.getElementById("logoutOverlay");
+        overlay.classList.remove("show");
+      }
+
+      // Confirm logout
+      function confirmLogout() {
+        performLogout();
+      }
+
+      function performLogout() {
+        // Clear session storage - use consistent keys
+        sessionStorage.removeItem("currentUser");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("verificationToken");
+
+        // Redirect to login page
+        window.location.href = "index.html";
+      }
+
+      // Show notification function
+      function showNotification(type, title, message) {
+        // Create notification element if it doesn't exist
+        let notification = document.getElementById("dashboard-notification");
+        if (!notification) {
+          notification = document.createElement("div");
+          notification.id = "dashboard-notification";
+          notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 18px 24px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                    transform: translateX(120%);
+                    transition: transform 0.3s ease;
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    min-width: 300px;
+                `;
+          document.body.appendChild(notification);
+        }
+
+        // Update notification content
+        notification.innerHTML = `
+                <i class="fas fa-${
+                  type === "info" ? "info-circle" : "exclamation-circle"
+                }"
+                   style="font-size: 24px; color: ${
+                     type === "info" ? "#2196f3" : "#f44336"
+                   };"></i>
+                <div>
+                    <div style="font-weight: 600; font-size: 15px; color: #333; margin-bottom: 4px;">${title}</div>
+                    <div style="font-size: 14px; color: #666;">${message}</div>
+                </div>
+            `;
+
+        // Show notification
+        notification.style.transform = "translateX(0)";
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notification.style.transform = "translateX(120%)";
+        }, 3000);
+      }
+
+      // Animate progress bar on load
+      window.addEventListener("load", function () {
+        const progressFill = document.querySelector(".progress-fill");
+        if (progressFill) {
+          progressFill.style.width = "0%";
+          // Progress will be updated by loadUserProgress() function
+        }
+
+        // Start idle timer
+        resetIdleTimer();
+      });
+
+      // ==================== PAGE VISIBILITY API ====================
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          // Reset timer when user comes back to the page
+          resetIdleTimer();
+        }
+      });
+    </script>
+  </body>
+</html>
